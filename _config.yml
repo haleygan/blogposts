@@ -1,6 +1,5 @@
 title: blogposts
 description: Notes and writeups from my projects
-theme: minima
 markdown: kramdown
 plugins:
   - jekyll-feed
@@ -15,5 +14,4 @@ defaults:
       type: posts
     values:
       layout: post
-      author: Haley
-
+      author: Haley Gan

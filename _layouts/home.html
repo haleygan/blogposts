@@ -1,0 +1,21 @@
+---
+layout: default
+---
+
+<section class="hero">
+  <p class="eyebrow">Project notes</p>
+  <h1>{{ page.title | default: site.title }}</h1>
+  <p class="hero-copy">{{ site.description }}</p>
+</section>
+
+<section class="post-list">
+  {% assign posts = site.posts %}
+  {% for post in posts %}
+    <article class="post-card">
+      <p class="post-meta">{{ post.date | date: "%B %-d, %Y" }}</p>
+      <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 220 }}</p>
+    </article>
+  {% endfor %}
+</section>
+
