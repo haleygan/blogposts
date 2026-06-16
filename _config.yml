@@ -1,0 +1,19 @@
+title: blogposts
+description: Notes and writeups from my projects
+theme: minima
+markdown: kramdown
+plugins:
+  - jekyll-feed
+
+collections:
+  posts:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: Haley
+
