@@ -2,3 +2,9 @@ _site/
 .sass-cache/
 .jekyll-cache/
 Gemfile.lock
+node_modules/
+dist/
+.vite/
+.env.local
+*.zip
+metadata.json

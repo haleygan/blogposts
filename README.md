@@ -1,21 +1,19 @@
 # blogposts
 
-This repo is set up for a GitHub Pages blog.
+Technical notes blog with a custom React UI based on the design you supplied.
 
-## What is here
+## Run locally
 
-- A Jekyll-compatible site layout
-- A draft post for Workload Identity Federation in GCP
-- Screenshot placeholders you can fill in later
+1. Install dependencies with `npm install`.
+2. Start the dev server with `npm run dev`.
+3. Open `http://localhost:3000`.
 
-## Plan
+## Content
 
-1. Keep the site simple and Markdown-first.
-2. Write posts in a conversational tone.
-3. Add screenshots where the UI matters.
-4. Publish through GitHub Pages once the remote repo is created.
+- The main WIF article lives in [`_posts/2026-06-16-workload-identity-federation-in-gcp.md`](./_posts/2026-06-16-workload-identity-federation-in-gcp.md).
+- The React app imports that file as raw markdown and renders it in the reader.
 
-## Remote repo status
+## Notes
 
-The local repo is ready, but the GitHub remote could not be created yet because `gh` is currently authenticated with an invalid token. Re-authenticate with `gh auth login` and then create the remote repo named `blogposts`.
-
+- The current UI comes from the zip you provided, then I trimmed it toward a blog-first layout.
+- Screenshot placeholders are still in the post so you can drop in your own images later.

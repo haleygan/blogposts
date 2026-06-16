@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: 'Lora', Georgia, Cambria, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --color-forest-50: #f2f8f5;
+  --color-forest-100: #e2eff5;
+  --color-forest-600: #106b43;
+  --color-forest-700: #0a4d31;
+  --color-forest-800: #073522;
+  --color-forest-900: #042115;
+}
+
+/* Base resets & custom smooth rendering behaviors */
+body {
+  @apply font-sans antialiased text-stone-800 bg-stone-50/50 transition-colors duration-300;
+}
+
+/* Custom scrollbar behaviors */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-stone-200 dark:bg-zinc-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-stone-300 dark:bg-zinc-700;
+}
+
+/* Floating custom tropical overlay styles */
+@keyframes jungleBreeze {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+
+.animate-jungle-leaf {
+  animation: jungleBreeze 8s ease-in-out infinite;
+}

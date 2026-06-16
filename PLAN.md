@@ -1,24 +1,19 @@
-# GitHub Pages plan
+# Blog plan
 
-## Site setup
+## UI
 
-1. Use GitHub Pages with Jekyll so the blog can stay Markdown-first.
-2. Keep the repo structure simple: home page, `_posts`, and an assets folder for screenshots.
-3. Use one post per topic and keep each post conversational.
+1. Use the React/Vite app as the site shell.
+2. Keep the design dark, spacious, and readable.
+3. Use the supplied UI system, but keep the content blog-first.
 
-## WIF post plan
+## Content
 
-1. Start with the problem: why WIF exists and why service account keys are not ideal.
-2. Explain the moving parts: pool, provider, service account, token exchange, and impersonation.
-3. Walk through GitHub Actions -> Artifact Registry as the main example.
-4. Pause along the way to explain providers, attribute mapping, and filters.
-5. Compare WIF with direct federation, Workforce Identity Federation, and service accounts.
-6. Add screenshot placeholders wherever the GCP or GitHub UI would help.
+1. Keep the WIF post as the first and featured article.
+2. Add screenshots where the setup flow needs visual help.
+3. Keep later posts in the same conversational tone.
 
-## Publishing plan
+## Deployment
 
-1. Create the remote GitHub repo named `blogposts`.
-2. Push this local repo to `main`.
-3. Enable GitHub Pages from the repo settings.
-4. Add the custom domain later if needed.
+1. Build the app to static output for GitHub Pages.
+2. Add a GitHub Actions deploy workflow after the repo remote is ready.
 
