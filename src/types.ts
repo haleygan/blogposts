@@ -19,22 +19,3 @@ export interface BlogPost {
   };
   category?: string;
 }
-
-export interface PortfolioProject {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  link: string;
-  iconName: string; // Lucide icon identifier
-  tagline: string;
-  architectureIntro: string;
-  techStack: string[];
-  highLevelArchitecture: string;
-  designDecisions: Array<{
-    title: string;
-    description: string;
-    tradeoff: string;
-  }>;
-  dataPipelineFlow?: string[]; // Step-by-step stream flow for data pipeline representation
-}
