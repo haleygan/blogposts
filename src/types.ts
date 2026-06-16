@@ -17,16 +17,7 @@ export interface BlogPost {
     avatar?: string;
     bio?: string;
   };
-  githubUrl?: string; // Optional URL linking back to the GitHub file
   category?: string;
-}
-
-export interface GithubConfig {
-  owner: string;
-  repo: string;
-  branch: string;
-  folderPath: string;
-  accessToken?: string; // Optional GitHub Personal Access Token to avoid rate limits
 }
 
 export interface PortfolioProject {

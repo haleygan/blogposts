@@ -221,29 +221,6 @@ export function BlogPostReader({ post, onBack, allPosts, onSelectPost }: BlogPos
           <MarkdownRenderer content={post.content} fontFamilyClass={fontStyleClass} />
         </div>
 
-        {/* Behind the scenes metadata link */}
-        {post.githubUrl && !distractionFree && (
-          <div className="mt-12 p-5 bg-gradient-to-r from-stone-50 to-stone-100/50 dark:from-zinc-900/30 dark:to-zinc-900/10 border border-stone-200/40 dark:border-zinc-800 rounded-2xl flex items-center justify-between gap-4 font-sans text-xs">
-            <div className="space-y-1">
-              <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">
-                GitHub HEADLESS CMS RECORD
-              </span>
-              <p className="text-stone-500 dark:text-zinc-400">
-                This document is managed inside your repository. Push commits to update live content.
-              </p>
-            </div>
-            <a 
-              href={post.githubUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg font-semibold transition-all hover:scale-102 flex items-center gap-1.5"
-            >
-              <span>View Source</span>
-              <ArrowLeft className="rotate-225" size={13} />
-            </a>
-          </div>
-        )}
-
       </article>
 
       {/* Related Posts Recommendation Row */}
