@@ -1,0 +1,133 @@
+direction: right
+
+github: "GitHub Actions" {
+  style: {
+    fill: "#E8F0FE"
+    stroke: "#4285F4"
+    stroke-width: 2
+    border-radius: 6
+    bold: true
+  }
+}
+
+oidc: "GitHub OIDC Provider" {
+  style: {
+    fill: "#E8F0FE"
+    stroke: "#4285F4"
+    stroke-width: 1
+    border-radius: 6
+    font-size: 13
+  }
+}
+
+gcp: {
+  label: "GCP (Security Token Service & IAM)"
+  style: {
+    fill: "#ffffff"
+    stroke: "#4285F4"
+    stroke-width: 2
+    border-radius: 8
+    bold: true
+  }
+
+  sts: "Security Token Service (STS)" {
+    style: {
+      fill: "#E6F1FB"
+      stroke: "#185FA5"
+      stroke-width: 1
+      border-radius: 6
+      bold: true
+      font-size: 13
+    }
+  }
+
+  pool: "Workload Identity Pool & Provider" {
+    style: {
+      fill: "#E1F5EE"
+      stroke: "#0F6E56"
+      stroke-width: 1
+      border-radius: 6
+      bold: true
+      font-size: 13
+    }
+  }
+
+  iam_binding: "IAM Binding\n(roles/iam.workloadIdentityUser)" {
+    style: {
+      fill: "#FAECE7"
+      stroke: "#993C1D"
+      stroke-width: 1
+      border-radius: 6
+      bold: true
+      font-size: 13
+    }
+  }
+
+  sa: "Service Account\ngithub-actions-sa" {
+    style: {
+      fill: "#FEF3E2"
+      stroke: "#BA7517"
+      stroke-width: 1
+      border-radius: 6
+      font-size: 13
+    }
+  }
+
+  registry: "Artifact Registry" {
+    style: {
+      fill: "#E6F1FB"
+      stroke: "#185FA5"
+      stroke-width: 1
+      border-radius: 6
+      bold: true
+      font-size: 13
+    }
+  }
+}
+
+github -> oidc: "1. Request signed JWT"
+oidc -> github: {
+  label: "2. Return JWT"
+  style: {
+    stroke-dash: 4
+    stroke: "#999999"
+  }
+}
+
+github -> gcp.sts: "3. Exchange JWT"
+gcp.sts -> gcp.pool: "4. Validate signature & conditions"
+gcp.pool -> gcp.sts: {
+  label: "5. Validation result"
+  style: {
+    stroke-dash: 4
+    stroke: "#999999"
+  }
+}
+gcp.sts -> github: {
+  label: "6. Return Federated Token"
+  style: {
+    stroke-dash: 4
+    stroke: "#999999"
+  }
+}
+
+github -> gcp.sts: "7. Request Access Token (generateAccessToken)"
+gcp.sts -> gcp.iam_binding: "8. Verify impersonation rights"
+gcp.iam_binding -> gcp.sa: "9. Rights confirmed"
+gcp.sts -> github: {
+  label: "10. Return OAuth 2.0 Access Token"
+  style: {
+    stroke-dash: 4
+    stroke: "#999999"
+  }
+}
+
+github -> gcp.registry: "11. Push Docker image (using Access Token)"
+
+gcp.sa -> gcp.registry: {
+  label: "Grants access via\nroles/artifactregistry.writer"
+  style: {
+    stroke-dash: 4
+    stroke: "#BA7517"
+  }
+}
