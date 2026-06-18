@@ -4,23 +4,20 @@
  */
 
 import { BlogPost } from '../types';
-import wifPost from '../../_posts/2026-06-16-workload-identity-federation-in-gcp.md?raw';
+import { SITE_AUTHOR } from './siteAuthor';
+import wifPost from '../../_posts/2026-06-18-workload-identity-federation-in-gcp.md?raw';
 
 export const DEFAULT_POSTS: BlogPost[] = [
   {
-    id: 'wif-gcp',
-    title: 'Authenticate your workloads without keys: Workload Identity Federation in GCP',
+    id: 'gcp-workload-identity-federation',
+    title: 'Say Goodbye to Service Account Keys: GCP Workload Identity Federation',
     excerpt:
-      'A practical walk-through of WIF in GCP, using GitHub Actions pushing Docker images to Artifact Registry as the example.',
-    date: 'June 16, 2026',
-    readTime: '14 min read',
-    tags: ['GCP', 'Security', 'CI/CD', 'GitHub Actions'],
-    author: {
-      name: 'Haley',
-      bio: 'Technical notes and project writeups, kept in plain language.',
-    },
+      'Manage trusts, not secrets — This is how GCP\'s Workload Identity Federation eliminates the need of using service account keys entirely.',
+    date: 'June 18, 2026',
+    readTime: '30 minutes read',
+    tags: ['GCP IAM', 'GitHub Actions', 'Workload Identity Federation'],
+    author: SITE_AUTHOR,
     content: wifPost,
     category: 'Cloud',
   },
-];
-
+]; 

@@ -1,13 +1,11 @@
-# Screenshot placeholders
+# Generated diagrams
 
-Drop the real screenshots in this folder later.
+This folder is populated from the matching `.d2` source files in `assets/editable_diagrams/`.
 
-Suggested filenames for the WIF post:
+Run this to regenerate the PNGs:
 
-- `wif-pool.png`
-- `wif-provider.png`
-- `wif-attribute-mapping.png`
-- `wif-service-account-binding.png`
-- `github-actions-auth-step.png`
-- `artifact-registry-push.png`
+```bash
+npm run render:diagrams
+```
 
+The renderer writes each output to the matching subfolder, emits SVG files, and normalizes spaces in filenames to underscores.
