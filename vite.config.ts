@@ -6,6 +6,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: process.env.NODE_ENV === 'production' ? '/blogposts/' : '/',
     plugins: [
       react(),
       tailwindcss(),
