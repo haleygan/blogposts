@@ -83,7 +83,7 @@ Inside the pool, you register Identity Providers. For each provider, you configu
 
 The pool doesn't actually validate the token itself. That work is done by the Security Token Service (STS), a separate GCP service. The pool just supplies the configuration that STS uses to do the validation.
 
-![Workload Identity Pool and Provider Setup](../assets/static_diagrams/2026-06-18-workload-identity-federation-in-gcp/workload_identity_pool_and_provider_setup.svg)
+<Diagram id="wif-pool-provider-setup" />
 
 With both sides configured, the two-stage authentication can take place.
 
@@ -91,7 +91,7 @@ With both sides configured, the two-stage authentication can take place.
 
 Here's what happens when the workflow runs:
 
-![Workload Identity Federation Token Exchange](../assets/static_diagrams/2026-06-18-workload-identity-federation-in-gcp/workload_identity_federation_token_exchange.svg)
+<Diagram id="wif-token-exchange" />
 
 1. The GitHub Actions workflow requests an OIDC token from GitHub and sends it to GCP's Security Token Service (STS).
 2. STS validates the token using the Workload Identity Pool and Provider config, then exchanges it for a GCP federated token.
@@ -111,6 +111,8 @@ The workflow presents its federated token, and GCP evaluates the IAM binding on 
 
 The tradeoff is flexibility. IAM bindings are role-level, so you can assign a predefined or custom role but you can't mix and match permissions from different roles into a single binding. If your workflow needs a precise set of permissions across multiple GCP services, managing that as direct resource bindings can get unwieldy quickly.
 
+<Diagram id="wif-direct-access" />
+
 #### Service Account Impersonation
 
 The alternative is to have a service account hold all the necessary permissions, and grant the external federated identity the ability to impersonate it. Once that's in place, the workflow exchanges its federated token for a short-lived OAuth 2.0 access token scoped to that service account, then uses that token to access GCP resources.
@@ -119,13 +121,13 @@ This is closer to an *RBAC* (role-based access control) model: you define a role
 
 To set this up on the GCP side, you create an IAM binding on the service account that grants the external federated identity the Workload Identity User role. This is what authorizes the impersonation.
 
-![Service Account and IAM Binding Setup](../assets/static_diagrams/2026-06-18-workload-identity-federation-in-gcp/service_account_impersonation_setup.svg)
+<Diagram id="wif-sa-setup" />
 
 If you're already using GCP service accounts with static keys, impersonation is a smooth migration path. You keep your existing IAM setup mostly intact and just swap out how authentication works. GCP has an official guide for this: [Migrate from service account keys](https://docs.cloud.google.com/iam/docs/migrate-from-service-account-keys).
 
 Here's the token flow with service account impersonation:
 
-![Workload Identity Federation Service Account Impersonation Token Generation](../assets/static_diagrams/2026-06-18-workload-identity-federation-in-gcp/workload_identity_federation_service_account_impersonation_token_generation.svg)
+<Diagram id="wif-sa-token-flow" />
 
 1. The workflow takes the GCP federated token and makes a request to GCP's IAM service, asking to impersonate the service account.
 2. GCP issues a short-lived OAuth 2.0 access token with the same permissions as the service account.
@@ -135,7 +137,7 @@ Here's the token flow with service account impersonation:
 
 Here's how all of that fits together end-to-end:
 
-![Workload Identity Federation with Service Account Impersonation Architecture Flow](../assets/static_diagrams/2026-06-18-workload-identity-federation-in-gcp/workload_identity_federation_architecture_flow.svg)
+<Diagram id="wif-full-flow" />
 
 ## References
 

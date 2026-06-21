@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Copy, Link2 } from 'lucide-react';
+import { DIAGRAM_REGISTRY } from './diagrams/index';
 
 interface MarkdownRendererProps {
   content: string;
@@ -360,6 +361,22 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif', post
     }
 
     if (trimmedLine === '') continue;
+
+    // <Diagram id="..." /> custom tag
+    const diagramMatch = trimmedLine.match(/^<Diagram\s+id="([^"]+)"\s*\/?>/);
+    if (diagramMatch) {
+      const DiagramComponent = DIAGRAM_REGISTRY[diagramMatch[1]];
+      if (DiagramComponent) {
+        components.push(<DiagramComponent key={`diagram-${i}`} />);
+      } else {
+        components.push(
+          <p key={`diagram-missing-${i}`} className="text-xs text-red-400 font-mono my-2">
+            [diagram not found: {diagramMatch[1]}]
+          </p>
+        );
+      }
+      continue;
+    }
 
     const standaloneImageMatch = trimmedLine.match(/^!\[(.*?)\]\((.*?)\)$/);
     if (standaloneImageMatch) {
