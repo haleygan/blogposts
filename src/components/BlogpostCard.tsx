@@ -4,12 +4,63 @@
  */
 
 import { BlogPost } from '../types';
-import { BookOpen, Calendar, ArrowRight } from 'lucide-react';
+import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText } from 'lucide-react';
 
 interface BlogpostCardProps {
   post: BlogPost;
   onSelect: (postId: string) => void;
   key?: string | number;
+}
+
+const CATEGORY_THEMES: Record<string, { from: string; via: string; to: string; logo?: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }> = {
+  Cloud:    { from: '#1565C0', via: '#1a73e8', to: '#0D47A1', logo: 'https://api.iconify.design/logos:google-cloud.svg', Icon: Cloud },
+  DevOps:   { from: '#374151', via: '#4B5563', to: '#1F2937', Icon: Server },
+  Security: { from: '#7C3AED', via: '#8B5CF6', to: '#5B21B6', Icon: Shield },
+  Backend:  { from: '#065F46', via: '#059669', to: '#064E3B', Icon: Cpu },
+  Frontend: { from: '#0E7490', via: '#0891B2', to: '#164E63', Icon: Code2 },
+};
+
+function GeneratedThumbnail({ post }: { post: BlogPost }) {
+  const theme = CATEGORY_THEMES[post.category ?? ''] ?? { from: '#44403C', via: '#57534E', to: '#292524', Icon: FileText };
+  const { Icon } = theme;
+
+  if (theme.logo) {
+    return (
+      <div className="w-full h-full bg-white flex items-center justify-center p-12">
+        <img src={theme.logo} alt={post.category} className="w-full h-full object-contain" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+      style={{ background: `linear-gradient(145deg, ${theme.from}, ${theme.via} 55%, ${theme.to})` }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)',
+          backgroundSize: '22px 22px',
+        }}
+      />
+      <div className="relative flex flex-col items-center gap-2.5">
+        <Icon size={34} strokeWidth={1.5} color="rgba(255,255,255,0.92)" />
+        {post.category && (
+          <span className="text-white/75 text-[11px] font-semibold font-mono uppercase tracking-[0.2em]">
+            {post.category}
+          </span>
+        )}
+      </div>
+      {post.tags[0] && (
+        <div className="absolute bottom-3 left-3">
+          <span className="text-white/70 text-[10px] font-sans font-medium bg-white/10 border border-white/15 px-2 py-0.5 rounded-full backdrop-blur-sm">
+            {post.tags[0]}
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function BlogpostCard({ post, onSelect }: BlogpostCardProps) {
@@ -32,16 +83,8 @@ export function BlogpostCard({ post, onSelect }: BlogpostCardProps) {
       )}
 
       {!post.coverImage && (
-        <div className="w-full md:w-48 lg:w-60 min-h-36 rounded-xl overflow-hidden shrink-0 relative border border-stone-100 bg-gradient-to-br from-emerald-500/15 via-white to-stone-50 flex items-end">
-          <div className="p-4">
-            <div className="inline-flex items-center gap-1.5 text-emerald-600 font-semibold text-xs uppercase tracking-wider">
-              <BookOpen size={13} />
-              <span>Draft</span>
-            </div>
-            <p className="mt-2 text-sm font-medium text-stone-700 leading-snug">
-              Technical notes, screenshots, and plain-English explanations.
-            </p>
-          </div>
+        <div className="w-full md:w-48 lg:w-60 min-h-36 md:h-auto rounded-xl overflow-hidden shrink-0 relative">
+          <GeneratedThumbnail post={post} />
         </div>
       )}
 
