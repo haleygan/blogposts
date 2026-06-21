@@ -1,11 +1,64 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'serve-root-assets',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.startsWith('/assets/')) {
+              const cleanUrl = req.url.split('?')[0];
+              const filePath = path.join(__dirname, cleanUrl);
+              if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                const mimeTypes: Record<string, string> = {
+                  '.svg': 'image/svg+xml',
+                  '.png': 'image/png',
+                  '.jpg': 'image/jpeg',
+                  '.jpeg': 'image/jpeg',
+                  '.gif': 'image/gif',
+                  '.css': 'text/css',
+                  '.js': 'application/javascript',
+                };
+                const ext = path.extname(filePath).toLowerCase();
+                res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+                res.writeHead(200);
+                res.end(fs.readFileSync(filePath));
+                return;
+              }
+            }
+            next();
+          });
+        },
+        closeBundle() {
+          const srcDir = path.join(__dirname, 'assets');
+          const destDir = path.join(__dirname, 'dist', 'assets');
+          
+          const copyRecursive = (src: string, dest: string) => {
+            if (!fs.existsSync(src)) return;
+            if (fs.statSync(src).isDirectory()) {
+              if (!fs.existsSync(dest)) {
+                fs.mkdirSync(dest, { recursive: true });
+              }
+              const entries = fs.readdirSync(src);
+              for (const entry of entries) {
+                copyRecursive(path.join(src, entry), path.join(dest, entry));
+              }
+            } else {
+              fs.copyFileSync(src, dest);
+            }
+          };
+          
+          copyRecursive(srcDir, destDir);
+        }
+      }
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

@@ -7,5 +7,5 @@ import type { BlogPost } from '../types';
 
 export const SITE_AUTHOR: BlogPost['author'] = {
   name: 'Haley',
-  bio: "I'm a Data Engineer.",
+  bio: "Data Engineer.",
 };

@@ -9,7 +9,8 @@ import { Check, Copy, Link2 } from 'lucide-react';
 
 interface MarkdownRendererProps {
   content: string;
-  fontFamilyClass?: string; // 'font-serif' or 'font-sans'
+  fontFamilyClass?: string;
+  postId?: string;
 }
 
 export function parseFrontmatter(markdown: string) {
@@ -37,10 +38,9 @@ export function parseFrontmatter(markdown: string) {
   return { frontmatter, content: cleanMarkdown };
 }
 
-export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: MarkdownRendererProps) {
-  // Extract and strip frontmatter to ensure clean content rendering
+export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif', postId }: MarkdownRendererProps) {
   const { content: cleanContent } = parseFrontmatter(content);
-  const bodyTextClass = 'text-[0.98rem] md:text-[1.05rem] leading-relaxed';
+  const bodyTextClass = 'text-[1.1rem] md:text-[1.2rem] leading-[1.8]';
   const baseUrl = import.meta.env.BASE_URL || '/';
   const defaultLightboxScale = 1;
   const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
@@ -61,11 +61,8 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
     setDragState(null);
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setLightboxImage(null);
-      }
+      if (event.key === 'Escape') setLightboxImage(null);
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxImage]);
@@ -84,7 +81,8 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
   };
 
   const copyHeadingLink = async (headingId: string) => {
-    const url = `${window.location.origin}${window.location.pathname}#${headingId}`;
+    const postSegment = postId ? `#/post/${postId}` : '';
+    const url = `${window.location.origin}${window.location.pathname}${postSegment}#${headingId}`;
     await navigator.clipboard.writeText(url);
     setCopiedHeadingId(headingId);
     window.setTimeout(() => {
@@ -93,19 +91,14 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
   };
 
   const resolveMarkdownUrl = (url: string) => {
-    if (/^(https?:|data:|blob:|mailto:|tel:|#)/.test(url)) {
-      return url;
-    }
-
+    if (/^(https?:|data:|blob:|mailto:|tel:|#)/.test(url)) return url;
     const normalized = url
       .replace(/^(\.\.\/)+/, '')
       .replace(/^(\.\/)+/, '')
       .replace(/^\/+/, '');
-
     return `${baseUrl.replace(/\/?$/, '/')}${normalized}`;
   };
 
-  // Simple, robust lines-based parsing to turn Markdown into React Components styled with Tailwind CSS
   const lines = cleanContent.split('\n');
   const components: React.ReactNode[] = [];
 
@@ -121,16 +114,13 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
   let tableRows: string[][] = [];
   const headingSlugCounts = new Map<string, number>();
 
-  // Helper to parse inline styles: Bold, Italic, Code, Links
   const parseInlineStyles = (text: string): React.ReactNode[] => {
     if (!text) return [null];
 
-    // Simple parser for inline tokens
     const tokens: Array<{ type: 'text' | 'bold' | 'italic' | 'code' | 'link' | 'image'; text: string; href?: string; alt?: string }> = [];
     let currentIdx = 0;
 
     while (currentIdx < text.length) {
-      // Bold Check: **bold** or __bold__
       const boldMatch = text.slice(currentIdx).match(/^(\*\*|__)(.*?)\1/);
       if (boldMatch) {
         tokens.push({ type: 'bold', text: boldMatch[2] });
@@ -138,7 +128,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         continue;
       }
 
-      // Italic Check: *italic* or _italic_
       const italicMatch = text.slice(currentIdx).match(/^(\*|_)(.*?)\1/);
       if (italicMatch && !italicMatch[2].startsWith('*')) {
         tokens.push({ type: 'italic', text: italicMatch[2] });
@@ -146,7 +135,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         continue;
       }
 
-      // Inline Code Check: `code`
       const inlineCodeMatch = text.slice(currentIdx).match(/^`(.*?)`/);
       if (inlineCodeMatch) {
         tokens.push({ type: 'code', text: inlineCodeMatch[1] });
@@ -154,7 +142,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         continue;
       }
 
-      // Link Check: [text](href)
       const linkMatch = text.slice(currentIdx).match(/^\[(.*?)\]\((.*?)\)/);
       if (linkMatch) {
         tokens.push({ type: 'link', text: linkMatch[1], href: linkMatch[2] });
@@ -162,7 +149,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         continue;
       }
 
-      // Image Check: ![alt](src)
       const imageMatch = text.slice(currentIdx).match(/^!\[(.*?)\]\((.*?)\)/);
       if (imageMatch) {
         tokens.push({ type: 'image', text: imageMatch[1], href: imageMatch[2], alt: imageMatch[1] });
@@ -170,7 +156,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         continue;
       }
 
-      // Plain char
       const lastToken = tokens[tokens.length - 1];
       if (lastToken && lastToken.type === 'text') {
         lastToken.text += text[currentIdx];
@@ -184,21 +169,21 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       const key = `${idx}-${token.text}`;
       switch (token.type) {
         case 'bold':
-          return <strong key={key} className="font-bold text-gray-900 dark:text-white">{token.text}</strong>;
+          return <strong key={key} className="font-bold text-gray-900">{token.text}</strong>;
         case 'italic':
-          return <em key={key} className="italic text-gray-800 dark:text-gray-300">{token.text}</em>;
+          return <em key={key} className="italic text-stone-900">{token.text}</em>;
         case 'code':
-          return <code key={key} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm text-amber-700 dark:text-amber-400 font-mono font-semibold">{token.text}</code>;
+          return <code key={key} className="bg-stone-100 px-1.5 py-0.5 rounded text-sm text-amber-700 font-mono font-semibold">{token.text}</code>;
         case 'link':
-          return <a key={key} href={token.href} className="text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors" target="_blank" rel="noopener noreferrer">{token.text}</a>;
-        case 'image':
+          return <a key={key} href={token.href} className="underline decoration-2 underline-offset-2 decoration-current/60 hover:decoration-current/90 transition-all" target="_blank" rel="noopener noreferrer">{token.text}</a>;
+        case 'image': {
           const imageSrc = resolveMarkdownUrl(token.href || '');
           return (
             <button
               key={key}
               type="button"
               onClick={() => setLightboxImage({ src: imageSrc, alt: token.alt || token.text })}
-              className="group my-8 block w-full overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm transition-colors hover:border-emerald-500/30 dark:border-zinc-800 dark:bg-zinc-950"
+              className="group my-8 block w-full overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm transition-colors hover:border-emerald-500/30"
               title="Open image in a lightbox"
             >
               <figure>
@@ -211,6 +196,7 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
               </figure>
             </button>
           );
+        }
         default:
           return token.text;
       }
@@ -226,7 +212,7 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
     const Tag = isOrdered ? 'ol' : 'ul';
     const listStyle = isOrdered ? 'list-decimal pl-6' : 'list-disc pl-6';
     return (
-      <Tag key={`list-${index}`} className={`${listStyle} space-y-2 my-4 text-gray-700 dark:text-gray-300 ${fontFamilyClass} ${bodyTextClass}`}>
+      <Tag key={`list-${index}`} className={`${listStyle} space-y-3 my-6 text-stone-900 ${fontFamilyClass} ${bodyTextClass}`}>
         {items.map((item, id) => (
           <li key={id} className="pl-1">
             {parseInlineStyles(item)}
@@ -242,22 +228,22 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
     const dataRows = rows.slice(1).filter(r => r.length > 0 && !r.every(val => val.trim().startsWith('-')));
 
     return (
-      <div key={`table-${index}`} className="my-6 overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-lg">
-        <table className={`min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-left ${bodyTextClass}`}>
-          <thead className="bg-gray-50 dark:bg-zinc-900/50">
+      <div key={`table-${index}`} className="my-6 overflow-x-auto border border-stone-200 rounded-lg">
+        <table className={`min-w-full divide-y divide-stone-200 text-left ${bodyTextClass}`}>
+          <thead className="bg-stone-50">
             <tr>
               {headers.map((header, idx) => (
-                <th key={idx} className="px-4 py-3 font-semibold text-gray-900 dark:text-white uppercase tracking-wider text-xs border-r border-gray-200 dark:border-gray-800 last:border-0">
+                <th key={idx} className="px-4 py-3 font-semibold text-stone-900 uppercase tracking-wider text-xs border-r border-stone-200 last:border-0">
                   {header.trim()}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-zinc-950">
+          <tbody className="divide-y divide-stone-200 bg-white">
             {dataRows.map((row, rowIdx) => (
-              <tr key={rowIdx} className="hover:bg-gray-50 dark:hover:bg-zinc-900/30 transition-colors">
+              <tr key={rowIdx} className="hover:bg-stone-50 transition-colors">
                 {row.map((cell, cellIdx) => (
-                  <td key={cellIdx} className="px-4 py-3 text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-800 last:border-0">
+                  <td key={cellIdx} className="px-4 py-3 text-stone-900 border-r border-stone-200 last:border-0">
                     {parseInlineStyles(cell.trim())}
                   </td>
                 ))}
@@ -269,11 +255,7 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
     );
   };
 
-  const renderHeading = (
-    level: 1 | 2 | 3 | 4,
-    text: string,
-    index: number,
-  ) => {
+  const renderHeading = (level: 1 | 2 | 3 | 4, text: string, index: number) => {
     const baseSlug = text
       .toLowerCase()
       .trim()
@@ -286,10 +268,10 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
     const headingId = nextCount === 1 ? slugKey : `${slugKey}-${nextCount}`;
 
     const headingClasses = {
-      1: 'text-3xl md:text-4xl font-bold font-sans text-gray-900 dark:text-white tracking-tight',
-      2: 'text-2xl md:text-3xl font-bold font-sans text-zinc-800 dark:text-zinc-100 tracking-tight',
-      3: 'text-xl md:text-2xl font-bold font-sans text-zinc-800 dark:text-zinc-100',
-      4: 'text-lg md:text-xl font-bold font-sans text-zinc-800 dark:text-zinc-100',
+      1: 'text-3xl md:text-4xl font-bold font-sans text-stone-900 tracking-tight',
+      2: 'text-2xl md:text-3xl font-bold font-sans text-stone-800 tracking-tight',
+      3: 'text-xl md:text-2xl font-bold font-sans text-stone-800',
+      4: 'text-lg md:text-xl font-bold font-sans text-stone-800',
     }[level];
 
     const spacingClasses = {
@@ -299,45 +281,38 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       4: 'mt-7 mb-5',
     }[level];
 
+    const postSegment = postId ? `#/post/${postId}` : '';
     return (
       <div key={`h${level}-${index}`} id={headingId} className={`${spacingClasses} scroll-mt-28`}>
         <div className="group flex items-start gap-2">
-          <a href={`#${headingId}`} className="block flex-1" title="Link to this section">
-            {React.createElement(
-              `h${level}`,
-              { className: `${headingClasses} transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400` },
-              parseInlineStyles(text),
-            )}
+          <a href={`${postSegment}#${headingId}`} className="block flex-1" title="Link to this section">
+            {React.createElement(`h${level}`, { className: headingClasses }, parseInlineStyles(text))}
           </a>
           <button
             type="button"
             onClick={() => copyHeadingLink(headingId)}
-            className="mt-1 inline-flex shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white p-2 text-stone-400 transition-colors hover:border-emerald-500/30 hover:text-emerald-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-500 dark:hover:text-emerald-400"
+            className="mt-1 inline-flex shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white p-2 text-stone-400 transition-colors hover:border-emerald-500/30 hover:text-emerald-600"
             title="Copy link to this section"
           >
             {copiedHeadingId === headingId ? <Check size={13} /> : <Link2 size={13} />}
           </button>
         </div>
-        <div className="mt-4 border-t border-stone-200/80 dark:border-zinc-800" />
+        <div className="mt-4 border-t border-stone-200/80" />
       </div>
     );
   };
 
-  // Main iteration loop
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
 
-    // 1. CODE BLOCK TOGGLE
     if (trimmedLine.startsWith('```')) {
       if (inCodeBlock) {
-        // Close code block
         components.push(renderCodeBlock(codeBlockLines, codeBlockLanguage, i));
         inCodeBlock = false;
         codeBlockLines = [];
         codeBlockLanguage = '';
       } else {
-        // Open code block
         inCodeBlock = true;
         codeBlockLanguage = trimmedLine.slice(3).trim();
       }
@@ -349,7 +324,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       continue;
     }
 
-    // 2. UNORDERED / ORDERED LIST TOGGLE
     const isUnorderedMatch = trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ');
     const isOrderedMatch = trimmedLine.match(/^\d+\.\s/);
 
@@ -358,8 +332,8 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
         inList = true;
         isOrderedList = !!isOrderedMatch;
       }
-      const itemText = isUnorderedMatch 
-        ? trimmedLine.slice(2) 
+      const itemText = isUnorderedMatch
+        ? trimmedLine.slice(2)
         : trimmedLine.substring(trimmedLine.indexOf(' ') + 1);
       listItems.push(itemText);
       continue;
@@ -371,13 +345,9 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       }
     }
 
-    // 3. TABLE PROCESSING
     const isTableRow = trimmedLine.startsWith('|') && trimmedLine.endsWith('|');
     if (isTableRow) {
-      if (!inTable) {
-        inTable = true;
-      }
-      // Split by pipe and remove empty first/last elements
+      if (!inTable) inTable = true;
       const cells = trimmedLine.split('|').slice(1, -1);
       tableRows.push(cells);
       continue;
@@ -389,12 +359,8 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       }
     }
 
-    // 4. EMPTY LINE SPACING
-    if (trimmedLine === '') {
-      continue;
-    }
+    if (trimmedLine === '') continue;
 
-    // 5a. STANDALONE IMAGES
     const standaloneImageMatch = trimmedLine.match(/^!\[(.*?)\]\((.*?)\)$/);
     if (standaloneImageMatch) {
       const imageSrc = resolveMarkdownUrl(standaloneImageMatch[2]);
@@ -403,7 +369,7 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
           key={`img-${i}`}
           type="button"
           onClick={() => setLightboxImage({ src: imageSrc, alt: standaloneImageMatch[1] })}
-          className="group my-8 block w-full overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm transition-colors hover:border-emerald-500/30 dark:border-zinc-800 dark:bg-zinc-950"
+          className="group my-8 block w-full overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm transition-colors hover:border-emerald-500/30"
           title="Open image in a lightbox"
         >
           <figure>
@@ -419,57 +385,34 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
       continue;
     }
 
-    // 5. HEADINGS
-    if (trimmedLine.startsWith('# ')) {
-      components.push(renderHeading(1, trimmedLine.slice(2), i));
-      continue;
-    }
-    if (trimmedLine.startsWith('## ')) {
-      components.push(renderHeading(2, trimmedLine.slice(3), i));
-      continue;
-    }
-    if (trimmedLine.startsWith('### ')) {
-      components.push(renderHeading(3, trimmedLine.slice(4), i));
-      continue;
-    }
-    if (trimmedLine.startsWith('#### ')) {
-      components.push(renderHeading(4, trimmedLine.slice(5), i));
-      continue;
-    }
+    if (trimmedLine.startsWith('# ')) { components.push(renderHeading(1, trimmedLine.slice(2), i)); continue; }
+    if (trimmedLine.startsWith('## ')) { components.push(renderHeading(2, trimmedLine.slice(3), i)); continue; }
+    if (trimmedLine.startsWith('### ')) { components.push(renderHeading(3, trimmedLine.slice(4), i)); continue; }
+    if (trimmedLine.startsWith('#### ')) { components.push(renderHeading(4, trimmedLine.slice(5), i)); continue; }
 
-    // 6. BLOCKQUOTE
     if (trimmedLine.startsWith('> ')) {
       components.push(
-        <blockquote key={`quote-${i}`} className={`border-l-4 border-emerald-500 pl-4 py-1.5 my-6 italic text-gray-700 dark:text-gray-300 bg-emerald-50/20 dark:bg-emerald-950/20 rounded-r ${bodyTextClass}`}>
+        <blockquote key={`quote-${i}`} className={`border-l-4 border-emerald-500 pl-4 py-1.5 my-6 italic text-stone-700 bg-emerald-50/30 rounded-r ${bodyTextClass}`}>
           {parseInlineStyles(trimmedLine.slice(2))}
         </blockquote>
       );
       continue;
     }
 
-    // 7. HORIZONTAL RULE
     if (trimmedLine === '---' || trimmedLine === '***') {
-      components.push(
-        <hr key={`hr-${i}`} className="my-8 border-t border-gray-200 dark:border-gray-800" />
-      );
+      components.push(<hr key={`hr-${i}`} className="my-8 border-t border-stone-200" />);
       continue;
     }
 
-    // 8. PARAGRAPH (DEFAULT)
     components.push(
-      <p key={`p-${i}`} className={`my-4 text-gray-800 dark:text-zinc-200 ${fontFamilyClass} ${bodyTextClass} tracking-normal font-light`}>
+      <p key={`p-${i}`} className={`my-7 text-[#292929] ${fontFamilyClass} ${bodyTextClass} tracking-normal font-light`}>
         {parseInlineStyles(trimmedLine)}
       </p>
     );
   }
 
-  // Handle lists or tables remaining open at the end
-  if (inList) {
-    components.push(renderList(listItems, isOrderedList, lines.length));
-  }
-  if (inTable) {
-    components.push(renderTable(tableRows, lines.length));
-  }
+  if (inList) components.push(renderList(listItems, isOrderedList, lines.length));
+  if (inTable) components.push(renderTable(tableRows, lines.length));
 
   return (
     <>
@@ -493,63 +436,25 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
                   Image Viewer
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
-                    onClick={() => adjustLightboxScale(-0.25)}
-                  >
-                    -
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
-                    onClick={() => {
-                      setLightboxScale(defaultLightboxScale);
-                      setLightboxOffset({ x: 0, y: 0 });
-                    }}
-                  >
-                    Reset
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
-                    onClick={() => adjustLightboxScale(0.25)}
-                  >
-                    +
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
-                    onClick={() => setLightboxImage(null)}
-                  >
-                    Close
-                  </button>
+                  <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20" onClick={() => adjustLightboxScale(-0.25)}>-</button>
+                  <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20" onClick={() => { setLightboxScale(defaultLightboxScale); setLightboxOffset({ x: 0, y: 0 }); }}>Reset</button>
+                  <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20" onClick={() => adjustLightboxScale(0.25)}>+</button>
+                  <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20" onClick={() => setLightboxImage(null)}>Close</button>
                 </div>
               </div>
 
               <div
                 className="relative flex-1 overflow-hidden rounded-3xl border border-white/10 bg-neutral-950 shadow-2xl"
                 onClick={() => setLightboxImage(null)}
-                onWheel={(event) => {
-                  event.preventDefault();
-                  adjustLightboxScale(event.deltaY > 0 ? -0.12 : 0.12);
-                }}
+                onWheel={(event) => { event.preventDefault(); adjustLightboxScale(event.deltaY > 0 ? -0.12 : 0.12); }}
                 onPointerDown={(event) => {
                   if (lightboxScale <= 1) return;
                   event.currentTarget.setPointerCapture(event.pointerId);
-                  setDragState({
-                    startX: event.clientX,
-                    startY: event.clientY,
-                    originX: lightboxOffset.x,
-                    originY: lightboxOffset.y,
-                  });
+                  setDragState({ startX: event.clientX, startY: event.clientY, originX: lightboxOffset.x, originY: lightboxOffset.y });
                 }}
                 onPointerMove={(event) => {
                   if (!dragState) return;
-                  setLightboxOffset({
-                    x: dragState.originX + (event.clientX - dragState.startX),
-                    y: dragState.originY + (event.clientY - dragState.startY),
-                  });
+                  setLightboxOffset({ x: dragState.originX + (event.clientX - dragState.startX), y: dragState.originY + (event.clientY - dragState.startY) });
                 }}
                 onPointerUp={() => setDragState(null)}
                 onPointerCancel={() => setDragState(null)}
@@ -558,9 +463,7 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
                 <img
                   src={lightboxImage.src}
                   alt={lightboxImage.alt}
-                  className={`absolute left-1/2 top-1/2 max-h-[92vh] max-w-[96vw] select-none rounded-2xl bg-white object-contain shadow-2xl ${
-                    lightboxScale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
-                  }`}
+                  className={`absolute left-1/2 top-1/2 max-h-[92vh] max-w-[96vw] select-none rounded-2xl bg-white object-contain shadow-2xl ${lightboxScale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`}
                   style={{
                     transform: `translate(calc(-50% + ${lightboxOffset.x}px), calc(-50% + ${lightboxOffset.y}px)) scale(${lightboxScale})`,
                     transition: dragState ? 'none' : 'transform 120ms ease-out',
@@ -577,7 +480,6 @@ export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif' }: Ma
   );
 }
 
-// Separate Mini Component to Handle Syntax-Highlighted Code Block Copy State
 interface CodeBlockProps {
   code: string;
   language?: string;
@@ -594,7 +496,7 @@ function CodeBlockComponent({ code, language }: CodeBlockProps) {
   };
 
   return (
-    <div className="relative group my-6 border border-gray-200/50 dark:border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-900 shadow-lg font-mono text-zinc-200 text-sm">
+    <div className="relative group my-6 border border-stone-200/50 rounded-xl overflow-hidden bg-zinc-900 shadow-lg font-mono text-zinc-200 text-sm">
       <div className="flex justify-between items-center px-4 py-2 bg-zinc-950 border-b border-zinc-800 text-zinc-400 select-none text-xs">
         <span className="font-semibold tracking-wider uppercase text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-white/80">
           {language || 'code'}

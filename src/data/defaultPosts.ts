@@ -10,7 +10,7 @@ import wifPost from '../../_posts/2026-06-18-workload-identity-federation-in-gcp
 export const DEFAULT_POSTS: BlogPost[] = [
   {
     id: 'gcp-workload-identity-federation',
-    title: 'Say Goodbye to Service Account Keys: GCP Workload Identity Federation',
+    title: 'Keyless Authentication to GCP with Workload Identity Federation',
     excerpt:
       'Manage trusts, not secrets — This is how GCP\'s Workload Identity Federation eliminates the need of using service account keys entirely.',
     date: 'June 18, 2026',
