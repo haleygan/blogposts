@@ -1,6 +1,6 @@
 # blogposts
 
-Technical notes blog with a custom React UI based on the design you supplied.
+Technical notes blog built with React 19 + Vite 6 + Tailwind CSS v4.
 
 ## Run locally
 
@@ -8,13 +8,24 @@ Technical notes blog with a custom React UI based on the design you supplied.
 2. Start the dev server with `npm run dev`.
 3. Open `http://localhost:3000`.
 
-## Content
+## Adding a post
 
-- The main WIF article lives in [`_posts/2026-06-16-workload-identity-federation-in-gcp.md`](./_posts/2026-06-16-workload-identity-federation-in-gcp.md).
-- The React app imports that file as raw markdown and renders it in the reader.
-- D2 source diagrams live in [`assets/editable_diagrams/`](./assets/editable_diagrams) and can be rendered with `npm run render:diagrams`.
+1. Create a markdown file in `_posts/` (filename format: `YYYY-MM-DD-slug.md`).
+2. Import it as raw text in `src/data/defaultPosts.ts` and add an entry to `DEFAULT_POSTS`.
+3. Add a `category` field to get an auto-generated thumbnail on the home page.
 
-## Notes
+## Interactive diagrams
 
-- The current UI comes from the zip you provided, then I trimmed it toward a blog-first layout.
-- Screenshot placeholders are still in the post so you can drop in your own images later.
+Diagrams are React components in `src/components/diagrams/`. To embed one in a post, add a tag:
+
+```
+<Diagram id="your-diagram-id" />
+```
+
+Then register the component in `src/components/diagrams/index.ts`.
+
+## Lint
+
+```
+npm run lint
+```
