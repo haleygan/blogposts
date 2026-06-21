@@ -18,7 +18,7 @@ export function WifPoolProviderSetup() {
             <span className="text-sm font-bold font-sans" style={{ color: '#534AB7' }}>Provider: GitHub Actions</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <DiagramNode
               theme="provider"
               label="Issuer URL"
@@ -36,7 +36,7 @@ export function WifPoolProviderSetup() {
             />
           </div>
 
-          <p className="text-[10px] text-stone-400 font-sans text-center mt-3">hover each rule for detail</p>
+          <p className="text-[10px] text-stone-400 font-sans text-center mt-3">tap or hover each rule for detail</p>
         </div>
       </div>
     </DiagramWrapper>

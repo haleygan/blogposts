@@ -27,10 +27,19 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
   const ref = useRef<HTMLDivElement>(null);
   const s = THEME[theme];
 
-  const handleEnter = () => {
+  const showTooltip = () => {
     if (!tooltip || !ref.current) return;
     const r = ref.current.getBoundingClientRect();
-    setPos({ x: r.left + r.width / 2, y: r.top });
+    const tooltipW = 224; // w-56
+    const margin = 8;
+    const rawX = r.left + r.width / 2;
+    const clampedX = Math.max(tooltipW / 2 + margin, Math.min(rawX, window.innerWidth - tooltipW / 2 - margin));
+    setPos({ x: clampedX, y: r.top });
+  };
+
+  const handleTap = (e: React.TouchEvent) => {
+    e.preventDefault();
+    pos ? setPos(null) : showTooltip();
   };
 
   return (
@@ -38,8 +47,9 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
       <div
         className="flex flex-col items-center gap-1.5 rounded-xl border-2 shadow-sm px-4 py-3 transition-shadow hover:shadow-md"
         style={{ backgroundColor: s.bg, borderColor: s.border, cursor: tooltip ? 'help' : 'default' }}
-        onMouseEnter={handleEnter}
+        onMouseEnter={showTooltip}
         onMouseLeave={() => setPos(null)}
+        onTouchStart={handleTap}
       >
         {icon && <img src={icon} alt="" aria-hidden className="w-6 h-6 object-contain" />}
         <span className="text-sm font-semibold font-sans text-center leading-snug whitespace-nowrap" style={{ color: s.text }}>
@@ -49,7 +59,7 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
 
       {pos && tooltip && createPortal(
         <div
-          className="fixed w-64 p-3 bg-stone-900 text-white text-xs rounded-xl shadow-2xl pointer-events-none z-[9999] leading-relaxed"
+          className="fixed w-56 max-w-[calc(100vw-1rem)] p-3 bg-stone-900 text-white text-xs rounded-xl shadow-2xl pointer-events-none z-[9999] leading-relaxed"
           style={{ left: pos.x, top: pos.y - 8, transform: 'translateX(-50%) translateY(-100%)' }}
         >
           {tooltip}

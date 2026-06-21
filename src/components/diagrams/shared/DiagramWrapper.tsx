@@ -16,7 +16,7 @@ export function DiagramWrapper({ title, icon, children }: DiagramWrapperProps) {
           {title}
         </span>
       </div>
-      <div className="p-6">
+      <div className="p-4 sm:p-6 overflow-x-auto">
         {children}
       </div>
     </div>

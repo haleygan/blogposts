@@ -63,18 +63,20 @@ export function StepRow({ step, fromLabel, fromColor, toLabel, toColor, action, 
   );
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-stone-100 last:border-0">
-      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-stone-700 text-white text-[10px] font-bold font-mono flex items-center justify-center">
-        {step}
-      </span>
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-[11px] font-semibold font-sans px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: fromColor }}>
-          {fromLabel}
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 py-3 border-b border-stone-100 last:border-0">
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-stone-700 text-white text-[10px] font-bold font-mono flex items-center justify-center">
+          {step}
         </span>
-        <Arrow />
-        <span className="text-[11px] font-semibold font-sans px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: toColor }}>
-          {toLabel}
-        </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-[11px] font-semibold font-sans px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: fromColor }}>
+            {fromLabel}
+          </span>
+          <Arrow />
+          <span className="text-[11px] font-semibold font-sans px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: toColor }}>
+            {toLabel}
+          </span>
+        </div>
       </div>
       <p className="text-sm text-stone-700 font-sans leading-snug">{action}</p>
     </div>
