@@ -2,6 +2,23 @@
 
 Technical notes blog built with React 19 + Vite 6 + Tailwind CSS v4.
 
+**Live site:** https://haleygan.github.io/blogposts/
+
+## Design
+
+The UI is intentionally minimal — modelled after Medium's reading experience. The home page shows a card grid where each post surfaces its title, date, category tag, and an auto-generated thumbnail. Clicking a card opens the post in a clean single-column reader: wide margins, generous line height, a readable font size, and no sidebars or distractions. The header stays fixed for navigation back to the list.
+
+## Deployment
+
+Pushes to `main` trigger a GitHub Actions workflow (`.github/workflows/deploy.yml`) that:
+
+1. Installs dependencies with `npm ci`
+2. Builds the site with `npm run build` — output goes to `dist/`
+3. Copies `dist/index.html` to `dist/404.html` so direct URL loads fall back to the React app instead of a GitHub 404 page
+4. Uploads `dist/` as a Pages artifact and deploys it via the official `actions/deploy-pages` action
+
+Vite is configured with `base: '/blogposts/'` in production so all asset paths are correct under the GitHub Pages sub-path.
+
 ## Run locally
 
 1. Install dependencies with `npm install`.
