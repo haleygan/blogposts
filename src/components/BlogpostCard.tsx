@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
 import { BlogPost } from '../types';
 import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText } from 'lucide-react';
 

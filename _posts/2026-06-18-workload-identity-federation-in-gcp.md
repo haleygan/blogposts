@@ -1,7 +1,11 @@
 ---
-layout: post
+id: gcp-workload-identity-federation
 title: "Keyless Authentication to GCP with Workload Identity Federation"
-date: 2026-06-18
+date: "June 18, 2026"
+excerpt: "Manage trusts, not secrets — This is how GCP's Workload Identity Federation eliminates the need of using service account keys entirely."
+readTime: "30 minutes read"
+tags: [GCP IAM, GitHub Actions, Workload Identity Federation]
+category: Cloud
 ---
 
 The old way to authenticate an external system (say, a CI/CD pipeline) to GCP was to create a [service account key](https://docs.cloud.google.com/iam/docs/keys-create-delete): download a JSON file, store it as a secret, inject it into your workflow. But those keys are essentially permanent passwords. They don't expire on their own, they need manual rotation, and a leaked key stays valid until you go revoke it yourself.

@@ -7,36 +7,12 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Copy, Link2 } from 'lucide-react';
 import { DIAGRAM_REGISTRY } from './diagrams/index';
+import { parseFrontmatter } from '../data/parseFrontmatter';
 
 interface MarkdownRendererProps {
   content: string;
   fontFamilyClass?: string;
   postId?: string;
-}
-
-export function parseFrontmatter(markdown: string) {
-  const frontmatter: Record<string, string> = {};
-  let cleanMarkdown = markdown.trim();
-
-  if (markdown.trim().startsWith('---')) {
-    const endOfFrontmatter = markdown.indexOf('---', 3);
-    if (endOfFrontmatter !== -1) {
-      const rawFrontmatter = markdown.substring(3, endOfFrontmatter);
-      cleanMarkdown = markdown.substring(endOfFrontmatter + 3).trim();
-
-      const lines = rawFrontmatter.split('\n');
-      lines.forEach((line) => {
-        const colonIndex = line.indexOf(':');
-        if (colonIndex !== -1) {
-          const key = line.substring(0, colonIndex).trim();
-          const val = line.substring(colonIndex + 1).trim();
-          frontmatter[key] = val;
-        }
-      });
-    }
-  }
-
-  return { frontmatter, content: cleanMarkdown };
 }
 
 export function MarkdownRenderer({ content, fontFamilyClass = 'font-serif', postId }: MarkdownRendererProps) {
