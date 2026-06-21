@@ -2,15 +2,15 @@ import React from 'react';
 import { DiagramNode } from './shared/DiagramNode';
 import { DiagramArrow } from './shared/DiagramArrow';
 import { DiagramWrapper } from './shared/DiagramWrapper';
-import { ICONS, GcsBucketIcon } from './shared/icons';
+import { ICONS } from './shared/icons';
 
-function GcsNode() {
+function ArtifactRegistryNode() {
   return (
     <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 shadow-sm px-4 py-3 transition-shadow hover:shadow-md"
       style={{ backgroundColor: '#E8F0FE', borderColor: '#1a73e8' }}>
-      <GcsBucketIcon size={24} />
+      <img src={ICONS.artifactRegistry} alt="" aria-hidden className="w-6 h-6 object-contain" />
       <span className="text-sm font-semibold font-sans text-center leading-snug" style={{ color: '#1a5da8' }}>
-        GCS Bucket
+        Artifact Registry
       </span>
     </div>
   );
@@ -29,11 +29,11 @@ export function WifDirectAccess() {
 
         <DiagramArrow
           direction="down"
-          label="roles/storage.objectAdmin (bound directly on the resource)"
+          label="roles/artifactregistry.writer (bound directly on the registry)"
           color="#1a73e8"
         />
 
-        <GcsNode />
+        <ArtifactRegistryNode />
       </div>
 
       <p className="text-[11px] text-stone-400 font-sans text-center mt-2">
