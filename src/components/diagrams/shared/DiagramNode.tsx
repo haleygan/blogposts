@@ -12,17 +12,23 @@ interface DiagramNodeProps {
 }
 
 const THEME: Record<NodeTheme, { bg: string; border: string; text: string }> = {
-  github:   { bg: '#f6f8fa',  border: '#6e5494', text: '#24292e' },
-  pool:     { bg: '#E1F5EE',  border: '#0F6E56', text: '#0F6E56' },
-  provider: { bg: '#EEEDFE',  border: '#534AB7', text: '#534AB7' },
-  sts:      { bg: '#E6F1FB',  border: '#185FA5', text: '#185FA5' },
-  sa:       { bg: '#FEF3E2',  border: '#BA7517', text: '#BA7517' },
-  iam:      { bg: '#FAECE7',  border: '#993C1D', text: '#993C1D' },
-  resource: { bg: '#E8F0FE',  border: '#1a73e8', text: '#1a5da8' },
-  neutral:  { bg: '#f3f4f6',  border: '#d1d5db', text: '#374151' },
+  github:   { bg: '#f6f8fa', border: '#6e5494', text: '#24292e' },
+  pool:     { bg: '#E1F5EE', border: '#0F6E56', text: '#0F6E56' },
+  provider: { bg: '#EEEDFE', border: '#534AB7', text: '#534AB7' },
+  sts:      { bg: '#E6F1FB', border: '#185FA5', text: '#185FA5' },
+  sa:       { bg: '#FEF3E2', border: '#BA7517', text: '#BA7517' },
+  iam:      { bg: '#FAECE7', border: '#993C1D', text: '#993C1D' },
+  resource: { bg: '#E8F0FE', border: '#1a73e8', text: '#1a5da8' },
+  neutral:  { bg: '#f3f4f6', border: '#d1d5db', text: '#374151' },
 };
 
-export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className = '' }: DiagramNodeProps) {
+export const DiagramNode = React.memo(function DiagramNode({
+  label,
+  icon,
+  tooltip,
+  theme = 'neutral',
+  className = '',
+}: DiagramNodeProps) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const s = THEME[theme];
@@ -30,7 +36,7 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
   const showTooltip = () => {
     if (!tooltip || !ref.current) return;
     const r = ref.current.getBoundingClientRect();
-    const tooltipW = 224; // w-56
+    const tooltipW = 224;
     const margin = 8;
     const rawX = r.left + r.width / 2;
     const clampedX = Math.max(tooltipW / 2 + margin, Math.min(rawX, window.innerWidth - tooltipW / 2 - margin));
@@ -51,7 +57,7 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
         onMouseLeave={() => setPos(null)}
         onTouchStart={handleTap}
       >
-        {icon && <img src={icon} alt="" aria-hidden className="w-6 h-6 object-contain" />}
+        {icon && <img src={icon} alt="" aria-hidden className="w-6 h-6 object-contain" loading="lazy" />}
         <span className="text-sm font-semibold font-sans text-center leading-snug whitespace-nowrap" style={{ color: s.text }}>
           {label}
         </span>
@@ -69,4 +75,4 @@ export function DiagramNode({ label, icon, tooltip, theme = 'neutral', className
       )}
     </div>
   );
-}
+});

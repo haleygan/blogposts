@@ -1,61 +1,87 @@
 import type { Plugin } from 'vite';
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve, join } from 'path';
 
-const VIRTUAL_INDEX_ID = 'virtual:post-index';
-const RESOLVED_VIRTUAL_INDEX_ID = '\0virtual:post-index';
+interface PostMeta {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  category?: string;
+  coverImage?: string;
+}
 
-function parseFrontmatterToMeta(markdown: string) {
+function parseFrontmatter(markdown: string): { meta: Record<string, string>; tags: string[]; content: string } {
   const fields: Record<string, string> = {};
-  const text = markdown.trim();
+  const listFields: Record<string, string[]> = {};
+  let listKey: string | null = null;
+  let body = markdown.trim();
 
-  if (text.startsWith('---')) {
-    const end = text.indexOf('---', 3);
+  if (body.startsWith('---')) {
+    const end = body.indexOf('---', 3);
     if (end !== -1) {
-      const block = text.slice(3, end);
+      const block = body.slice(3, end);
+      body = body.slice(end + 3).trim();
       for (const line of block.split('\n')) {
+        // YAML list item (e.g. "  - GCP IAM") — belongs to the most recent list key
+        const listItemMatch = line.match(/^\s+-\s+(.*)/);
+        if (listItemMatch && listKey) {
+          listFields[listKey] = listFields[listKey] ?? [];
+          listFields[listKey].push(listItemMatch[1].trim().replace(/^["']|["']$/g, ''));
+          continue;
+        }
+        // Scalar key: value line
         const colon = line.indexOf(':');
         if (colon === -1) continue;
         const key = line.slice(0, colon).trim();
         const val = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '');
         fields[key] = val;
+        listKey = val === '' ? key : null;
       }
     }
   }
 
-  const tagsRaw = fields.tags ?? '';
-  const tagsMatch = tagsRaw.match(/^\[(.*)\]$/);
-  const tags = tagsMatch
-    ? tagsMatch[1].split(',').map((t: string) => t.trim().replace(/^["']|["']$/g, '')).filter(Boolean)
-    : tagsRaw ? [tagsRaw] : [];
+  // Resolve tags: multi-line list format takes precedence, then inline bracket, then single value
+  let tags: string[] = [];
+  if (listFields.tags && listFields.tags.length > 0) {
+    tags = listFields.tags;
+  } else {
+    const tagsRaw = fields.tags ?? '';
+    const bracketMatch = tagsRaw.match(/^\[(.*)\]$/);
+    if (bracketMatch) {
+      tags = bracketMatch[1].split(',').map((t) => t.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+    } else if (tagsRaw) {
+      tags = [tagsRaw];
+    }
+  }
 
-  return {
-    id: fields.id ?? '',
-    title: fields.title ?? '',
-    excerpt: fields.excerpt ?? '',
-    date: fields.date ?? '',
-    readTime: fields.readTime ?? '',
-    tags,
-    category: fields.category,
-    coverImage: fields.coverImage,
-  };
+  return { meta: fields, tags, content: body };
 }
 
-function buildIndexModule(postsDir: string): string {
+function buildPostIndex(postsDir: string): PostMeta[] {
   let files: string[] = [];
   try {
     files = readdirSync(postsDir).filter((f) => f.endsWith('.md'));
   } catch {
-    files = [];
+    return [];
   }
 
-  const index = files.map((filename) => {
+  return files.map((filename) => {
     const raw = readFileSync(join(postsDir, filename), 'utf-8');
-    const meta = parseFrontmatterToMeta(raw);
-    return { ...meta, _globPath: `../../blogposts/${filename}` };
+    const { meta, tags } = parseFrontmatter(raw);
+    return {
+      id: meta.id ?? '',
+      title: meta.title ?? '',
+      excerpt: meta.excerpt ?? '',
+      date: meta.date ?? '',
+      readTime: meta.readTime ?? '',
+      tags,
+      category: meta.category,
+      coverImage: meta.coverImage,
+    };
   });
-
-  return `export const POST_INDEX = ${JSON.stringify(index)};`;
 }
 
 export function markdownPlugin(): Plugin {
@@ -64,24 +90,66 @@ export function markdownPlugin(): Plugin {
   return {
     name: 'vite-plugin-markdown',
 
-    resolveId(id) {
-      if (id === VIRTUAL_INDEX_ID) return RESOLVED_VIRTUAL_INDEX_ID;
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url?.split('?')[0] ?? '';
+
+        if (url.endsWith('/posts-index.json')) {
+          const index = buildPostIndex(postsDir);
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify(index));
+          return;
+        }
+
+        const postMatch = url.match(/\/posts\/([^/]+)\.md$/);
+        if (postMatch) {
+          const requestedId = postMatch[1];
+          let files: string[] = [];
+          try {
+            files = readdirSync(postsDir).filter((f) => f.endsWith('.md'));
+          } catch {
+            next();
+            return;
+          }
+
+          for (const filename of files) {
+            const raw = readFileSync(join(postsDir, filename), 'utf-8');
+            const { meta, content } = parseFrontmatter(raw);
+            if (meta.id === requestedId) {
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+              res.end(content);
+              return;
+            }
+          }
+        }
+
+        next();
+      });
     },
 
-    load(id) {
-      if (id === RESOLVED_VIRTUAL_INDEX_ID) {
-        return buildIndexModule(postsDir);
+    closeBundle() {
+      const outDir = resolve(process.cwd(), 'dist');
+
+      const index = buildPostIndex(postsDir);
+      writeFileSync(join(outDir, 'posts-index.json'), JSON.stringify(index));
+
+      const postsOutDir = join(outDir, 'posts');
+      mkdirSync(postsOutDir, { recursive: true });
+
+      let files: string[] = [];
+      try {
+        files = readdirSync(postsDir).filter((f) => f.endsWith('.md'));
+      } catch {
+        return;
       }
-    },
 
-    transform(code, id) {
-      const cleanId = id.split('?')[0];
-      if (!cleanId.endsWith('.md')) return;
-      // Export raw markdown as default — content-only, no metadata
-      return {
-        code: `export default ${JSON.stringify(code)};`,
-        map: null,
-      };
+      for (const filename of files) {
+        const raw = readFileSync(join(postsDir, filename), 'utf-8');
+        const { meta, content } = parseFrontmatter(raw);
+        if (meta.id) {
+          writeFileSync(join(postsOutDir, `${meta.id}.md`), content);
+        }
+      }
     },
   };
 }

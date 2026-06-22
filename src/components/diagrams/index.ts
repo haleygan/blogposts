@@ -1,16 +1,10 @@
 import React from 'react';
-import { WifPoolProviderSetup } from './WifPoolProviderSetup';
-import { WifTokenExchange } from './WifTokenExchange';
-import { WifDirectAccess } from './WifDirectAccess';
-import { WifServiceAccountSetup } from './WifServiceAccountSetup';
-import { WifServiceAccountTokenFlow } from './WifServiceAccountTokenFlow';
-import { WifFullFlow } from './WifFullFlow';
 
-export const DIAGRAM_REGISTRY: Record<string, React.ComponentType> = {
-  'wif-pool-provider-setup': WifPoolProviderSetup,
-  'wif-token-exchange':      WifTokenExchange,
-  'wif-direct-access':       WifDirectAccess,
-  'wif-sa-setup':            WifServiceAccountSetup,
-  'wif-sa-token-flow':       WifServiceAccountTokenFlow,
-  'wif-full-flow':           WifFullFlow,
+export const DIAGRAMS: Record<string, React.LazyExoticComponent<React.ComponentType>> = {
+  'wif-pool-provider-setup':        React.lazy(() => import('./WifPoolProviderSetup').then(m => ({ default: m.WifPoolProviderSetup }))),
+  'wif-token-exchange':             React.lazy(() => import('./WifTokenExchange').then(m => ({ default: m.WifTokenExchange }))),
+  'wif-direct-access':              React.lazy(() => import('./WifDirectAccess').then(m => ({ default: m.WifDirectAccess }))),
+  'wif-sa-setup':                   React.lazy(() => import('./WifServiceAccountSetup').then(m => ({ default: m.WifServiceAccountSetup }))),
+  'wif-sa-token-flow':              React.lazy(() => import('./WifServiceAccountTokenFlow').then(m => ({ default: m.WifServiceAccountTokenFlow }))),
+  'wif-full-flow':                  React.lazy(() => import('./WifFullFlow').then(m => ({ default: m.WifFullFlow }))),
 };

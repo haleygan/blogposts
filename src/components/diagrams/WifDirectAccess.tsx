@@ -6,9 +6,11 @@ import { ICONS } from './shared/icons';
 
 function ArtifactRegistryNode() {
   return (
-    <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 shadow-sm px-4 py-3 transition-shadow hover:shadow-md"
-      style={{ backgroundColor: '#E8F0FE', borderColor: '#1a73e8' }}>
-      <img src={ICONS.artifactRegistry} alt="" aria-hidden className="w-6 h-6 object-contain" />
+    <div
+      className="flex flex-col items-center gap-1.5 rounded-xl border-2 shadow-sm px-4 py-3 transition-shadow hover:shadow-md"
+      style={{ backgroundColor: '#E8F0FE', borderColor: '#1a73e8' }}
+    >
+      <img src={ICONS.artifactRegistry} alt="" aria-hidden className="w-6 h-6 object-contain" loading="lazy" />
       <span className="text-sm font-semibold font-sans text-center leading-snug" style={{ color: '#1a5da8' }}>
         Artifact Registry
       </span>

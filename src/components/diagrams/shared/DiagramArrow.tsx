@@ -7,7 +7,12 @@ interface ArrowProps {
   className?: string;
 }
 
-export function DiagramArrow({ label, direction = 'right', color = '#9ca3af', className = '' }: ArrowProps) {
+export const DiagramArrow = React.memo(function DiagramArrow({
+  label,
+  direction = 'right',
+  color = '#9ca3af',
+  className = '',
+}: ArrowProps) {
   if (direction === 'down') {
     return (
       <div className={`flex flex-col items-center gap-1 ${className}`}>
@@ -40,9 +45,8 @@ export function DiagramArrow({ label, direction = 'right', color = '#9ca3af', cl
       </div>
     </div>
   );
-}
+});
 
-/* Single row in a step-flow diagram */
 interface StepRowProps {
   step: number;
   fromLabel: string;
@@ -53,7 +57,15 @@ interface StepRowProps {
   direction?: 'right' | 'left';
 }
 
-export function StepRow({ step, fromLabel, fromColor, toLabel, toColor, action, direction = 'right' }: StepRowProps) {
+export const StepRow = React.memo(function StepRow({
+  step,
+  fromLabel,
+  fromColor,
+  toLabel,
+  toColor,
+  action,
+  direction = 'right',
+}: StepRowProps) {
   const Arrow = () => (
     <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden className="shrink-0">
       {direction === 'right'
@@ -79,4 +91,4 @@ export function StepRow({ step, fromLabel, fromColor, toLabel, toColor, action, 
       <p className="text-sm text-stone-700 font-sans leading-snug">{action}</p>
     </div>
   );
-}
+});

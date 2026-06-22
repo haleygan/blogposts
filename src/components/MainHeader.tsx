@@ -1,15 +1,11 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
+import React from 'react';
 import { BookOpen, Sparkles } from 'lucide-react';
 
 interface MainHeaderProps {
   onPostsClick: () => void;
 }
 
-export function MainHeader({ onPostsClick }: MainHeaderProps) {
+export const MainHeader = React.memo(function MainHeader({ onPostsClick }: MainHeaderProps) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-200 bg-white/90 backdrop-blur-md transition-colors">
       <div className="mx-auto flex h-[4.75rem] max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -39,4 +35,4 @@ export function MainHeader({ onPostsClick }: MainHeaderProps) {
       </div>
     </header>
   );
-}
+});

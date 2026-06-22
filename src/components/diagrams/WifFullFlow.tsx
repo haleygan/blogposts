@@ -22,7 +22,7 @@ export function WifFullFlow() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="rounded-xl border-2 p-5 flex flex-col gap-4" style={{ backgroundColor: '#E6F1FB', borderColor: '#185FA5' }}>
           <div className="flex items-center gap-2">
-            <img src={ICONS.github} alt="" aria-hidden className="w-4 h-4" />
+            <img src={ICONS.github} alt="" aria-hidden className="w-4 h-4" loading="lazy" />
             <span className="text-xs font-bold font-sans uppercase tracking-wider" style={{ color: '#185FA5' }}>
               Part 1 — Token Exchange
             </span>
@@ -36,7 +36,7 @@ export function WifFullFlow() {
 
         <div className="rounded-xl border-2 p-5 flex flex-col gap-4" style={{ backgroundColor: '#E1F5EE', borderColor: '#0F6E56' }}>
           <div className="flex items-center gap-2">
-            <img src={ICONS.gcp} alt="" aria-hidden className="w-4 h-4" />
+            <img src={ICONS.gcp} alt="" aria-hidden className="w-4 h-4" loading="lazy" />
             <span className="text-xs font-bold font-sans uppercase tracking-wider" style={{ color: '#0F6E56' }}>
               Part 2 — Resource Access
             </span>

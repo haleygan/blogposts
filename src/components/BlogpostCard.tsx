@@ -1,19 +1,18 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React from 'react';
-import { BlogPostMeta } from '../types';
 import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText } from 'lucide-react';
+import type { BlogPostMeta } from '../types';
 
 interface BlogpostCardProps {
   post: BlogPostMeta;
   onSelect: (postId: string) => void;
-  key?: string | number;
+  onPrefetch: (postId: string) => void;
 }
 
-const CATEGORY_THEMES: Record<string, { from: string; via: string; to: string; logo?: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }> = {
+const CATEGORY_THEMES: Record<string, {
+  from: string; via: string; to: string;
+  logo?: string;
+  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+}> = {
   Cloud:    { from: '#1565C0', via: '#1a73e8', to: '#0D47A1', logo: 'https://api.iconify.design/logos:google-cloud.svg', Icon: Cloud },
   DevOps:   { from: '#374151', via: '#4B5563', to: '#1F2937', Icon: Server },
   Security: { from: '#7C3AED', via: '#8B5CF6', to: '#5B21B6', Icon: Shield },
@@ -25,10 +24,10 @@ function GeneratedThumbnail({ post }: { post: BlogPostMeta }) {
   const theme = CATEGORY_THEMES[post.category ?? ''] ?? { from: '#44403C', via: '#57534E', to: '#292524', Icon: FileText };
   const { Icon } = theme;
 
-  if (theme.logo) {
+  if ('logo' in theme && theme.logo) {
     return (
       <div className="w-full h-full bg-white flex items-center justify-center p-12">
-        <img src={theme.logo} alt={post.category} className="w-full h-full object-contain" />
+        <img src={'logo' in theme ? theme.logo : ''} alt={post.category} className="w-full h-full object-contain" loading="lazy" decoding="async" />
       </div>
     );
   }
@@ -64,13 +63,14 @@ function GeneratedThumbnail({ post }: { post: BlogPostMeta }) {
   );
 }
 
-export function BlogpostCard({ post, onSelect }: BlogpostCardProps) {
+export const BlogpostCard = React.memo(function BlogpostCard({ post, onSelect, onPrefetch }: BlogpostCardProps) {
   return (
     <article
       onClick={() => onSelect(post.id)}
+      onMouseEnter={() => onPrefetch(post.id)}
       className="group flex flex-col md:flex-row gap-6 p-6 md:p-8 bg-white hover:bg-stone-50 border border-stone-100 hover:border-stone-300 rounded-2xl cursor-pointer hover:shadow-xl hover:shadow-stone-200/40 hover:scale-[1.008] transition-all duration-300"
     >
-      {post.coverImage && (
+      {post.coverImage ? (
         <div className="w-full md:w-48 lg:w-60 h-44 md:h-auto rounded-xl overflow-hidden shrink-0 relative bg-stone-100">
           <img
             src={post.coverImage}
@@ -78,12 +78,11 @@ export function BlogpostCard({ post, onSelect }: BlogpostCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             referrerPolicy="no-referrer"
             loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-multiply" />
         </div>
-      )}
-
-      {!post.coverImage && (
+      ) : (
         <div className="w-full md:w-48 lg:w-60 min-h-36 md:h-auto rounded-xl overflow-hidden shrink-0 relative">
           <GeneratedThumbnail post={post} />
         </div>
@@ -130,4 +129,4 @@ export function BlogpostCard({ post, onSelect }: BlogpostCardProps) {
       </div>
     </article>
   );
-}
+});

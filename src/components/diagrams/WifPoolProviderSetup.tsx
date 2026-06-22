@@ -8,13 +8,13 @@ export function WifPoolProviderSetup() {
     <DiagramWrapper title="Pool &amp; Provider Structure" icon={ICONS.gcp}>
       <div className="rounded-xl border-2 p-5" style={{ backgroundColor: '#E1F5EE', borderColor: '#0F6E56' }}>
         <div className="flex items-center gap-2 mb-4">
-          <img src={ICONS.gcp} alt="" aria-hidden className="w-5 h-5" />
+          <img src={ICONS.gcp} alt="" aria-hidden className="w-5 h-5" loading="lazy" />
           <span className="text-sm font-bold font-sans" style={{ color: '#0F6E56' }}>Workload Identity Pool</span>
         </div>
 
         <div className="rounded-lg border-2 p-4" style={{ backgroundColor: '#EEEDFE', borderColor: '#534AB7' }}>
           <div className="flex items-center gap-2 mb-4">
-            <img src={ICONS.github} alt="" aria-hidden className="w-5 h-5" />
+            <img src={ICONS.github} alt="" aria-hidden className="w-5 h-5" loading="lazy" />
             <span className="text-sm font-bold font-sans" style={{ color: '#534AB7' }}>Provider: GitHub Actions</span>
           </div>
 

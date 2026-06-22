@@ -1,22 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-/* Lock dark: variants to explicit .dark class — prevents OS dark mode from inverting text on our light background */
+/* Lock dark: variants to explicit .dark class — prevents OS dark mode from inverting the light background */
 @custom-variant dark (&:where(.dark, .dark *));
-
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-serif: 'Lora', Georgia, Cambria, serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* 60% Canvas — pure white like Medium */
+  /* 60% Canvas — pure white */
   --color-canvas: #FFFFFF;
 
-  /* 30% Ink gray — Medium body text (#292929) */
+  /* 30% Ink gray — body text */
   --color-ink: #292929;
 
-  /* 10% Accent — Teal (midpoint: Data Mint #0284C7 ↔ Verdant #16A34A) */
+  /* 10% Accent teal palette */
   --color-accent-50:  #f0fdfa;
   --color-accent-100: #ccfbf1;
   --color-accent-200: #99f6e4;
@@ -29,7 +27,7 @@
   --color-accent-900: #134e4a;
   --color-accent-950: #042f2e;
 
-  /* Remap emerald -> accent throughout existing classes */
+  /* Remap emerald → accent so existing utility classes pick up the palette */
   --color-emerald-50:  var(--color-accent-50);
   --color-emerald-100: var(--color-accent-100);
   --color-emerald-200: var(--color-accent-200);
@@ -43,14 +41,12 @@
   --color-emerald-950: var(--color-accent-950);
 }
 
-/* Base resets & custom smooth rendering behaviors */
 body {
   background-color: var(--color-canvas);
   color: var(--color-ink);
   @apply font-sans antialiased transition-colors duration-300;
 }
 
-/* Custom scrollbar behaviors */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -68,7 +64,6 @@ body {
   @apply bg-stone-300;
 }
 
-/* Floating custom tropical overlay styles */
 @keyframes jungleBreeze {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-6px) rotate(2deg); }
