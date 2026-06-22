@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { BlogPost } from '../types';
+import { BlogPostMeta } from '../types';
 import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText } from 'lucide-react';
 
 interface BlogpostCardProps {
-  post: BlogPost;
+  post: BlogPostMeta;
   onSelect: (postId: string) => void;
   key?: string | number;
 }
@@ -21,7 +21,7 @@ const CATEGORY_THEMES: Record<string, { from: string; via: string; to: string; l
   Frontend: { from: '#0E7490', via: '#0891B2', to: '#164E63', Icon: Code2 },
 };
 
-function GeneratedThumbnail({ post }: { post: BlogPost }) {
+function GeneratedThumbnail({ post }: { post: BlogPostMeta }) {
   const theme = CATEGORY_THEMES[post.category ?? ''] ?? { from: '#44403C', via: '#57534E', to: '#292524', Icon: FileText };
   const { Icon } = theme;
 

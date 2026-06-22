@@ -1,10 +1,13 @@
 ---
 id: gcp-workload-identity-federation
-title: "Keyless Authentication to GCP with Workload Identity Federation"
-date: "June 18, 2026"
-excerpt: "Manage trusts, not secrets — This is how GCP's Workload Identity Federation eliminates the need of using service account keys entirely."
-readTime: "30 minutes read"
-tags: [GCP IAM, GitHub Actions, Workload Identity Federation]
+title: Keyless Authentication to GCP with Workload Identity Federation
+date: June 18, 2026
+excerpt: Manage trusts, not secrets — This is how GCP's Workload Identity Federation eliminates the need of using service account keys entirely.
+readTime: 30 minutes read
+tags:
+  - GCP IAM
+  - GitHub Actions
+  - Workload Identity Federation
 category: Cloud
 ---
 

@@ -4,21 +4,29 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { BlogPost } from '../types';
+import { BlogPostMeta } from '../types';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { ArrowLeft, Type, Sparkles } from 'lucide-react';
 import { AuthorInfo } from './AuthorInfo';
+import { CONTENT_LOADERS } from '../data/defaultPosts';
 
 interface BlogPostReaderProps {
-  post: BlogPost;
+  post: BlogPostMeta;
   onBack: () => void;
-  allPosts: BlogPost[];
+  allPosts: BlogPostMeta[];
   onSelectPost: (postId: string) => void;
 }
 
 export function BlogPostReader({ post, onBack, allPosts, onSelectPost }: BlogPostReaderProps) {
   const [fontFamily, setFontFamily] = useState<'serif' | 'sans'>('serif');
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [content, setContent] = useState<string | null>(null);
+
+  useEffect(() => {
+    setContent(null);
+    const loader = CONTENT_LOADERS[post.id];
+    if (loader) loader().then(setContent);
+  }, [post.id]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +119,15 @@ export function BlogPostReader({ post, onBack, allPosts, onSelectPost }: BlogPos
 
         {/* Content */}
         <div className="markdown-body text-[#292929]">
-          <MarkdownRenderer content={post.content} fontFamilyClass={fontStyleClass} postId={post.id} />
+          {content === null ? (
+            <div className="space-y-4 animate-pulse">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-4 bg-stone-100 rounded" style={{ width: `${70 + (i % 3) * 10}%` }} />
+              ))}
+            </div>
+          ) : (
+            <MarkdownRenderer content={content} fontFamilyClass={fontStyleClass} postId={post.id} />
+          )}
         </div>
 
       </article>

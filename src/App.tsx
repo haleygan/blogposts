@@ -5,14 +5,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Search } from 'lucide-react';
-import { BlogPost } from './types';
+import { BlogPostMeta } from './types';
 import { DEFAULT_POSTS } from './data/defaultPosts';
 import { MainHeader } from './components/MainHeader';
 import { BlogpostCard } from './components/BlogpostCard';
 import { BlogPostReader } from './components/BlogPostReader';
 
 export default function App() {
-  const [posts] = useState<BlogPost[]>(DEFAULT_POSTS);
+  const [posts] = useState<BlogPostMeta[]>(DEFAULT_POSTS);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(() => {
     const hash = window.location.hash;
     if (hash.startsWith('#/post/')) {

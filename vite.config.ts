@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
 import {defineConfig} from 'vite';
+import { markdownPlugin } from './vite-plugin-markdown';
 
 export default defineConfig(() => {
   return {
     base: process.env.NODE_ENV === 'production' ? '/blogposts/' : '/',
     plugins: [
+      markdownPlugin(),
       react(),
       tailwindcss(),
       {
