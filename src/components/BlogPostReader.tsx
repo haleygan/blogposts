@@ -131,8 +131,11 @@ export const BlogPostReader = React.memo(function BlogPostReader({
               {relatedPosts.map(related => (
                 <div
                   key={related.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSelectPost(related.id)}
-                  className="p-5 bg-white border border-stone-100 rounded-2xl cursor-pointer hover:border-emerald-500/30 hover:shadow-md transition-all duration-300"
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectPost(related.id); } }}
+                  className="p-5 bg-white border border-stone-100 rounded-2xl cursor-pointer hover:border-emerald-500/30 hover:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 >
                   <span className="text-[10px] font-mono text-emerald-600 font-bold uppercase block mb-1">
                     {related.tags[0]}

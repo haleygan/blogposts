@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -43,10 +43,14 @@ interface CodeBlockProps {
 function CodeBlock({ code, language }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard permission denied — silently ignore
+    }
   }, [code]);
 
   return (
@@ -91,9 +95,22 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
   const [dragState, setDragState] = useState<{
     startX: number; startY: number; originX: number; originY: number;
   } | null>(null);
-  const [copiedHeadingId, setCopiedHeadingId] = useState<string | null>(null);
+  // Ref so heading components can read the copied id without being recreated on each change
+  const copiedHeadingIdRef = useRef<string | null>(null);
+  const [, forceHeadingUpdate] = useState(0);
 
   const baseUrl = import.meta.env.BASE_URL ?? '/';
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!lightboxImage) return;
+    lightboxCloseRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxImage(null);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [lightboxImage]);
 
   const openLightbox = useCallback((src: string, alt: string) => {
     setLightboxImage({ src, alt });
@@ -113,11 +130,19 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
   const copyHeadingLink = useCallback(async (headingId: string) => {
     const postSegment = postId ? `#/post/${postId}` : '';
     const url = `${window.location.origin}${window.location.pathname}${postSegment}#${headingId}`;
-    await navigator.clipboard.writeText(url);
-    setCopiedHeadingId(headingId);
-    window.setTimeout(() => {
-      setCopiedHeadingId(current => (current === headingId ? null : current));
-    }, 1500);
+    try {
+      await navigator.clipboard.writeText(url);
+      copiedHeadingIdRef.current = headingId;
+      forceHeadingUpdate(n => n + 1);
+      window.setTimeout(() => {
+        if (copiedHeadingIdRef.current === headingId) {
+          copiedHeadingIdRef.current = null;
+          forceHeadingUpdate(n => n + 1);
+        }
+      }, 1500);
+    } catch {
+      // clipboard permission denied — silently ignore
+    }
   }, [postId]);
 
   const resolveUrl = useCallback((url: string) => {
@@ -142,6 +167,7 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
     return function HeadingComponent({ id, children }: { id?: string; children?: React.ReactNode }) {
       const headingId = id ?? '';
       const postSegment = postId ? `#/post/${postId}` : '';
+      const isCopied = copiedHeadingIdRef.current === headingId;
       return (
         <div id={headingId} className={`${spacingClasses[level]} scroll-mt-28`}>
           <div className="group flex items-start gap-2">
@@ -154,14 +180,16 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
               className="mt-1 inline-flex shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white p-2 text-stone-400 transition-colors hover:border-emerald-500/30 hover:text-emerald-600"
               title="Copy link to this section"
             >
-              {copiedHeadingId === headingId ? <Check size={13} /> : <Link2 size={13} />}
+              {isCopied ? <Check size={13} /> : <Link2 size={13} />}
             </button>
           </div>
           <div className="mt-4 border-t border-stone-200/80" />
         </div>
       );
     };
-  }, [copyHeadingLink, copiedHeadingId, postId]);
+  // copiedHeadingIdRef is a ref — stable reference, no dep needed; forceHeadingUpdate triggers re-render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [copyHeadingLink, postId]);
 
   const components = useMemo(() => ({
     h1: makeHeading(1),
@@ -212,18 +240,24 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
     em: ({ children }: { children?: React.ReactNode }) => (
       <em className="italic text-stone-900">{children}</em>
     ),
-    a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
-      <a href={href} className="underline decoration-2 underline-offset-2 decoration-current/60 hover:decoration-current/90 transition-all" target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    ),
+    a: ({ href, children }: { href?: string; children?: React.ReactNode }) => {
+      const isExternal = !!href && /^https?:\/\//.test(href);
+      return (
+        <a
+          href={href}
+          className="underline decoration-2 underline-offset-2 decoration-current/60 hover:decoration-current/90 transition-all"
+          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          {children}
+        </a>
+      );
+    },
 
     code: ({ className, children }: { className?: string; children?: React.ReactNode }) => {
-      const code = String(children ?? '');
-      const isBlock = code.endsWith('\n');
-      if (isBlock) {
-        const lang = /language-(\w+)/.exec(className ?? '')?.[1] ?? '';
-        return <CodeBlock code={code.replace(/\n$/, '')} language={lang} />;
+      const lang = /language-(\w+)/.exec(className ?? '')?.[1] ?? '';
+      if (lang || className?.startsWith('language-')) {
+        const code = String(children ?? '').replace(/\n$/, '');
+        return <CodeBlock code={code} language={lang} />;
       }
       return (
         <code className="bg-stone-100 px-1.5 py-0.5 rounded text-sm text-amber-700 font-mono font-semibold">
@@ -291,7 +325,7 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
                 <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20" onClick={() => adjustScale(-0.25)}>-</button>
                 <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20" onClick={() => { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }}>Reset</button>
                 <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20" onClick={() => adjustScale(0.25)}>+</button>
-                <button type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20" onClick={() => setLightboxImage(null)}>Close</button>
+                <button ref={lightboxCloseRef} type="button" className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20" onClick={() => setLightboxImage(null)}>Close</button>
               </div>
             </div>
 

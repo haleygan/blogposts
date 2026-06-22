@@ -24,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     fetch(`${BASE}/posts-index.json`)
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then((data: Omit<BlogPostMeta, 'author'>[]) => {
         const sorted = data
           .map(p => ({ ...p, author: SITE_AUTHOR }))
@@ -36,7 +36,9 @@ export default function App() {
 
   const fetchContent = useCallback(async (id: string): Promise<string> => {
     if (contentCache.current.has(id)) return contentCache.current.get(id)!;
-    const text = await fetch(`${BASE}/posts/${id}.md`).then(r => r.text());
+    const r = await fetch(`${BASE}/posts/${id}.md`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text = await r.text();
     contentCache.current.set(id, text);
     return text;
   }, []);
@@ -75,15 +77,15 @@ export default function App() {
 
   const activePost = posts.find(p => p.id === selectedPostId);
 
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = React.useMemo(() => {
     const q = deferredQuery.trim().toLowerCase();
-    if (!q) return true;
-    return (
+    if (!q) return posts;
+    return posts.filter(post =>
       post.title.toLowerCase().includes(q) ||
       post.excerpt.toLowerCase().includes(q) ||
       post.tags.some(t => t.toLowerCase().includes(q))
     );
-  });
+  }, [posts, deferredQuery]);
 
   const openPost = useCallback((postId: string) => {
     window.location.hash = `#/post/${postId}`;
