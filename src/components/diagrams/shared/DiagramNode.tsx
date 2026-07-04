@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-export type NodeTheme = 'github' | 'pool' | 'provider' | 'sts' | 'sa' | 'iam' | 'resource' | 'neutral';
+export type NodeTheme =
+  | 'github' | 'pool' | 'provider' | 'sts' | 'sa' | 'iam' | 'resource' | 'neutral'
+  | 'hook' | 'skill' | 'wiki-content' | 'brain-content' | 'user'
+  | 'spotlight';
 
 interface DiagramNodeProps {
   label: string;
@@ -20,6 +23,12 @@ const THEME: Record<NodeTheme, { bg: string; border: string; text: string }> = {
   iam:      { bg: '#FAECE7', border: '#993C1D', text: '#993C1D' },
   resource: { bg: '#E8F0FE', border: '#1a73e8', text: '#1a5da8' },
   neutral:  { bg: '#f3f4f6', border: '#d1d5db', text: '#374151' },
+  hook:          { bg: '#F7FEE7', border: '#65A30D', text: '#4D7C0F' },
+  skill:         { bg: '#FDF4FF', border: '#A21CAF', text: '#86198F' },
+  'wiki-content':  { bg: '#ECFDF5', border: '#059669', text: '#047857' },
+  'brain-content': { bg: '#F5F3FF', border: '#7C3AED', text: '#6D28D9' },
+  user:          { bg: '#FFF1F2', border: '#E11D48', text: '#BE123C' },
+  spotlight:     { bg: '#FFFBEB', border: '#D97706', text: '#92400E' },
 };
 
 export const DiagramNode = React.memo(function DiagramNode({
