@@ -9,6 +9,7 @@ tags:
   - Second Brain
   - Claude Code
 category: AI/LLM
+coverImage: assets/aios-brain-cover.svg
 ---
 
 Most personal knowledge systems fail in one of two ways. Either the notes pile up with no ritual keeping them honest, so cross-references rot and stale pages sit there uncorrected. Or a maintenance ritual exists but has nowhere to file what it finds, so the discipline burns out after a week. This post covers the framework I use to dodge both failure modes. The knowledge half borrows from [Andrej Karpathy's "LLM Wiki" gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): instead of an LLM re-deriving answers from raw documents at query time, it incrementally builds and maintains a persistent wiki, and the human's job narrows to curating sources and asking good questions. The maintenance-cadence half borrows from Nate Herk's Three Ms (Mindset, Method, Machine) and his `AIS-OS` starter kit: a repeatable loop for finding a manual task worth automating and actually shipping it. Everything below runs inside Claude Code, and the hooks and skills mentioned throughout are Claude Code's own mechanisms.
@@ -19,14 +20,13 @@ There's nothing magic underneath this. It's files in a folder, read and edited l
 
 There are many ways to organize this. Pick whatever structure makes sense for how you think, not the one below specifically. What actually matters is understanding how to *maintain* whatever shape you land on, not copying mine. Here's mine, because it's a concrete starting point:
 
-- **`brain/`**: the system's own intelligence about itself. Holds `aios-intake.md` (the intake questionnaire that seeds everything else), `connections.md` (what's reachable and how), and a `references/` subfolder with standing docs like the Three Ms framework and a voice guide.
-- **`identity-context/`**: human-maintained facts about the user, read-only from the system's side. Holds files like `about-me.md`, `about-business.md`, and `priorities.md`.
-- **`inbox/`**: the raw capture queue. Individual dropped files (`session-<project>-<name>-<date>.md`, a rough design note, a job description) plus a `processed/` subfolder that keeps the audit trail after each file gets filed.
 - **`wiki/`**: the actual knowledge base. An `index.md` navigation index at the top, then `pages/<project>/` folders, one per project, each split into `context/`, `knowledge/`, `log/`, `plan/`, and `archives/`.
+- **`brain/`**: the system's own intelligence about itself. Holds `aios-intake.md` (the intake questionnaire that seeds everything else), `connections.md` (what's reachable and how), and a `references/` subfolder with standing docs like the Three Ms framework and a voice guide.
+- **`inbox/`**: the raw capture queue. Individual dropped files (`session-<project>-<name>-<date>.md`, a rough design note, a job description) plus a `processed/` subfolder that keeps the audit trail after each file gets filed.
 
 <Diagram id="top-level-shape" />
 
-## Intro to Knowledge Maintenance (the WIKI)
+## Intro to Knowledge Maintenance (LLM Wiki)
 
 <Diagram id="library-of-books" />
 
@@ -40,7 +40,27 @@ The cleanest example of this in action is how a session starts:
 
 <Diagram id="how-you-enter-the-system" />
 
-`CLAUDE.md` loads automatically at the start of every session and tells the agent who I am and how to work. From there it checks `wiki/index.md` to see what projects and topics exist. From there it goes straight to the one file relevant to the question actually being asked. No need to read the whole wiki. No need to hand over a manual path. Two small, stable files do the routing.
+`CLAUDE.md` loads automatically at the start of every session and tells the agent who I am and how to work. From there it checks `wiki/index.md` to see what projects and topics exist. From there it goes straight to the one file relevant to the question actually being asked. No need to read the whole wiki. No need to hand over a manual path. Two small, stable files do the routing. Stripped to the essentials, that's:
+
+```markdown
+# CLAUDE.md (excerpt)
+You are my personal AI Operating System.
+## Where to look first
+- `wiki/index.md` — navigation index, read before any project question
+```
+
+```markdown
+# wiki/index.md (excerpt)
+- **recipe-app** — `wiki/pages/recipe-app/` — tags: #cooking #side-project
+- **job-search** — `wiki/pages/job-search/` — tags: #career
+```
+
+```markdown
+# wiki/pages/recipe-app/knowledge/setup.md (excerpt)
+How the local dev environment is configured, and why each piece is there.
+```
+
+One small addition worth stealing: tag topics consistently in `index.md` (`#cooking`, `#career`, whatever categories fit your own life). Two projects sharing a tag link up immediately from the index itself, instead of you hunting for a cross-reference buried in a knowledge file.
 
 Here's the part that's actually hard about keeping this working: it's not writing the note. Writing a note is easy. The hard part is that a new file needs to be *registered*, added to the index so anything downstream can find it, and *cross-linked* whenever it references something nested somewhere else in the wiki. Skip that step and the note technically exists but is invisible, an orphan the agent will never think to check. This is exactly why maintenance can't just be "remember to write things down." It needs dedicated skills that handle registering and linking as a matter of course, not as an afterthought.
 
@@ -63,7 +83,7 @@ Everything above is about keeping *knowledge* honest. This section is about keep
 
 Two concrete examples of what this upkeep looks like in practice.
 
-**Example 1: scheduled weekly linting.** On a fixed cadence, review what happened over the past week and use it to revise or plan new automations. I run this as a cloud-scheduled session rather than something I have to remember to kick off myself.
+**Example 1: scheduled weekly linting.** On a fixed cadence, review what happened over the past week and use it to revise or plan new automations. I run this as a Claude routine, a scheduled cloud session, rather than something I have to remember to kick off myself.
 
 <Diagram id="weekly-linting-schedule" />
 
@@ -89,5 +109,6 @@ Most of these originate from [Nate Herk's own GitHub](https://github.com/nateher
 - Both sides share the same entry point every session: `CLAUDE.md` loads first, `wiki/index.md` gets checked next, and only then does the agent go looking at the specific file the question actually needs.
 - Both sides also share the same inbox loop: a session-close hook captures what happened, a session-start hook surfaces it, and a human decides whether it becomes wiki content, a new automation, or nothing at all.
 - None of this needs to be elaborate to work. It needs registering, cross-linking, and a cadence that actually runs, not a bigger folder tree.
+- Build and maintain this deliberately. Don't let the LLM dominate the process, or the brain quietly starts speaking a different language than you do. No system can imitate or replace you without explicit instruction and guidance from you.
 
 <Diagram id="aios-full-round-trip" />

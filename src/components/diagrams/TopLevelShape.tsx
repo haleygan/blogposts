@@ -23,7 +23,7 @@ function TreeLine({ depth, last, text, dim }: TreeLineProps) {
 }
 
 interface FolderColumnProps {
-  theme: 'brain-content' | 'user' | 'neutral' | 'wiki-content';
+  theme: 'brain-content' | 'neutral' | 'wiki-content';
   root: string;
   bg: string;
   border: string;
@@ -45,45 +45,43 @@ function FolderColumn({ theme, root, bg, border, text, children }: FolderColumnP
 export function TopLevelShape() {
   return (
     <DiagramWrapper title="The Shape of the System">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <FolderColumn theme="brain-content" root="brain/" bg="#F5F3FF" border="#7C3AED" text="#6D28D9">
-          <TreeLine depth={0} text="aios-intake.md" />
-          <TreeLine depth={0} text="connections.md" />
-          <TreeLine depth={0} text="EXPANSIONS.md" />
-          <TreeLine depth={0} last text="references/" />
-          <TreeLine depth={1} text="3ms-framework.md" />
-          <TreeLine depth={1} text="voice.md" />
-          <TreeLine depth={1} last text="pointer-audit.md" />
-        </FolderColumn>
+      <div className="flex flex-col items-center">
+        <DiagramNode theme="neutral" label="/ (project root)" />
+        <div className="w-px h-5 bg-stone-300" />
 
-        <FolderColumn theme="user" root="identity-context/" bg="#FFF1F2" border="#E11D48" text="#BE123C">
-          <TreeLine depth={0} text="about-me.md" />
-          <TreeLine depth={0} text="about-business.md" />
-          <TreeLine depth={0} last text="priorities.md" />
-          <TreeLine depth={0} dim last text="(human-maintained, Claude never overwrites)" />
-        </FolderColumn>
+        <div className="flex flex-col gap-5 w-full max-w-md">
+          <FolderColumn theme="wiki-content" root="wiki/" bg="#ECFDF5" border="#059669" text="#047857">
+            <TreeLine depth={0} text="index.md" />
+            <TreeLine depth={0} text="schema.md" />
+            <TreeLine depth={0} last text="pages/" />
+            <TreeLine depth={1} last text="<project>/" />
+            <TreeLine depth={2} text="context/" />
+            <TreeLine depth={2} text="knowledge/" />
+            <TreeLine depth={2} text="log/" />
+            <TreeLine depth={2} text="plan/" />
+            <TreeLine depth={2} last text="archives/" />
+          </FolderColumn>
 
-        <FolderColumn theme="neutral" root="inbox/" bg="#f3f4f6" border="#d1d5db" text="#374151">
-          <TreeLine depth={0} text="session-2026-06-30.md" />
-          <TreeLine depth={0} last text="processed/" />
-          <TreeLine depth={1} last dim text="(audit trail, never deleted)" />
-        </FolderColumn>
+          <FolderColumn theme="brain-content" root="brain/" bg="#F5F3FF" border="#7C3AED" text="#6D28D9">
+            <TreeLine depth={0} text="aios-intake.md" />
+            <TreeLine depth={0} text="connections.md" />
+            <TreeLine depth={0} text="EXPANSIONS.md" />
+            <TreeLine depth={0} last text="references/" />
+            <TreeLine depth={1} text="3ms-framework.md" />
+            <TreeLine depth={1} text="voice.md" />
+            <TreeLine depth={1} last text="pointer-audit.md" />
+          </FolderColumn>
 
-        <FolderColumn theme="wiki-content" root="wiki/" bg="#ECFDF5" border="#059669" text="#047857">
-          <TreeLine depth={0} text="index.md" />
-          <TreeLine depth={0} text="schema.md" />
-          <TreeLine depth={0} last text="pages/" />
-          <TreeLine depth={1} last text="<project>/" />
-          <TreeLine depth={2} text="context/" />
-          <TreeLine depth={2} text="knowledge/" />
-          <TreeLine depth={2} text="log/" />
-          <TreeLine depth={2} text="plan/" />
-          <TreeLine depth={2} last text="archives/" />
-        </FolderColumn>
+          <FolderColumn theme="neutral" root="inbox/" bg="#f3f4f6" border="#d1d5db" text="#374151">
+            <TreeLine depth={0} text="session-2026-06-30.md" />
+            <TreeLine depth={0} last text="processed/" />
+            <TreeLine depth={1} last dim text="(audit trail, never deleted)" />
+          </FolderColumn>
+        </div>
       </div>
 
       <p className="text-[11px] text-stone-400 font-sans text-center mt-4">
-        Just files in a folder — no magic. This is one way to shape it; the part that matters is maintaining whatever shape you pick.
+        Just files in a folder — no magic. All three sit at the same root. This is one way to shape it; the part that matters is maintaining whatever shape you pick.
       </p>
     </DiagramWrapper>
   );
