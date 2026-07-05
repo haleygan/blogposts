@@ -13,5 +13,4 @@ export const DIAGRAMS: Record<string, React.LazyExoticComponent<React.ComponentT
   'deliberate-upkeep':              React.lazy(() => import('./DeliberateUpkeep').then(m => ({ default: m.DeliberateUpkeep }))),
   'weekly-linting-schedule':        React.lazy(() => import('./WeeklyLintingSchedule').then(m => ({ default: m.WeeklyLintingSchedule }))),
   'inbox-loop':                     React.lazy(() => import('./InboxLoop').then(m => ({ default: m.InboxLoop }))),
-  'aios-full-round-trip':           React.lazy(() => import('./AiosFullRoundTrip').then(m => ({ default: m.AiosFullRoundTrip }))),
 };

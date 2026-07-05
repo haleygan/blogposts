@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText } from 'lucide-react';
+import { BookOpen, Calendar, ArrowRight, Cloud, Server, Shield, Code2, Cpu, FileText, Brain } from 'lucide-react';
 import type { BlogPostMeta } from '../types';
 
 interface BlogpostCardProps {
@@ -11,6 +11,7 @@ interface BlogpostCardProps {
 const CATEGORY_THEMES: Record<string, {
   from: string; via: string; to: string;
   logo?: string;
+  emoji?: string;
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 }> = {
   Cloud:    { from: '#1565C0', via: '#1a73e8', to: '#0D47A1', logo: 'https://api.iconify.design/logos:google-cloud.svg', Icon: Cloud },
@@ -18,6 +19,7 @@ const CATEGORY_THEMES: Record<string, {
   Security: { from: '#7C3AED', via: '#8B5CF6', to: '#5B21B6', Icon: Shield },
   Backend:  { from: '#065F46', via: '#059669', to: '#064E3B', Icon: Cpu },
   Frontend: { from: '#0E7490', via: '#0891B2', to: '#164E63', Icon: Code2 },
+  'AI/LLM': { from: '#6D28D9', via: '#7C3AED', to: '#4C1D95', emoji: '🧠', Icon: Brain },
 };
 
 function GeneratedThumbnail({ post }: { post: BlogPostMeta }) {
@@ -45,7 +47,11 @@ function GeneratedThumbnail({ post }: { post: BlogPostMeta }) {
         }}
       />
       <div className="relative flex flex-col items-center gap-2.5">
-        <Icon size={34} strokeWidth={1.5} color="rgba(255,255,255,0.92)" />
+        {'emoji' in theme && theme.emoji ? (
+          <span className="text-4xl leading-none" role="img" aria-label={post.category}>{theme.emoji}</span>
+        ) : (
+          <Icon size={34} strokeWidth={1.5} color="rgba(255,255,255,0.92)" />
+        )}
         {post.category && (
           <span className="text-white/75 text-[11px] font-semibold font-mono uppercase tracking-[0.2em]">
             {post.category}
