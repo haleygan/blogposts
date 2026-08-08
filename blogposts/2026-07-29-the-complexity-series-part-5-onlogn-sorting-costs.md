@@ -181,12 +181,12 @@ def quicksort(arr):
 
 If the pivot is chosen well, it splits the array roughly in half each time. This gives the same recursion tree as merge sort: log(n) levels, each costing O(n) work. Total: O(n log n).
 
-But if the pivot is chosen poorly (say, always the smallest or largest element), the array splits into one element and n-1 elements. Then you recurse n times, and the cost becomes O(n^2).
+But if the pivot is chosen poorly (say, always the smallest or largest element), the array splits into one element and n-1 elements. Then you recurse n times, and the cost becomes O(n²).
 
 Here is the key difference from merge sort:
 
 - Merge sort: O(n log n) guaranteed, every time.
-- Quicksort: O(n log n) on average if the pivot is random, O(n^2) worst case.
+- Quicksort: O(n log n) on average if the pivot is random, O(n²) worst case.
 
 That worst case is coming in Part 6. For now, know this: Quicksort's average case matches merge sort, but it can degrade catastrophically if the pivot is unlucky. Production systems that use quicksort add randomization (random pivot selection) or use median-of-three heuristics to avoid the worst case.
 

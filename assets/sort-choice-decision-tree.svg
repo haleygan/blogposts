@@ -1,0 +1,84 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#0e1b2f"/>
+
+  <!-- Title -->
+  <text x="600" y="40" font-size="28" font-weight="bold" fill="#e8eef7" text-anchor="middle">Choosing Your Sort Strategy</text>
+
+  <!-- Root decision -->
+  <rect x="450" y="80" width="300" height="60" fill="#5c7cfa" stroke="#748ffc" stroke-width="2" rx="6"/>
+  <text x="600" y="105" font-size="13" font-weight="bold" fill="white" text-anchor="middle">How much data?</text>
+  <text x="600" y="125" font-size="11" fill="#e8eef7" text-anchor="middle">(rows to sort)</text>
+
+  <!-- Branch 1: Millions -->
+  <line x1="480" y1="140" x2="280" y2="200" stroke="#3d5a80" stroke-width="2"/>
+  <text x="380" y="165" font-size="11" fill="#7dd3fc" font-weight="bold">Millions+</text>
+
+  <rect x="130" y="200" width="300" height="60" fill="#f76707" stroke="#fd7e14" stroke-width="2" rx="6"/>
+  <text x="280" y="220" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Data Warehouse</text>
+  <text x="280" y="240" font-size="11" fill="#fff3bf" text-anchor="middle">ORDER BY / SortMergeJoin</text>
+
+  <text x="280" y="300" font-size="12" fill="#a8b8d8" text-anchor="middle">Spark, Snowflake,</text>
+  <text x="280" y="320" font-size="12" fill="#a8b8d8" text-anchor="middle">BigQuery, Redshift</text>
+
+  <!-- Branch 2: Thousands to hundreds of thousands -->
+  <line x1="600" y1="140" x2="600" y2="200" stroke="#3d5a80" stroke-width="2"/>
+  <text x="630" y="165" font-size="11" fill="#7dd3fc" font-weight="bold">Thousands</text>
+
+  <rect x="450" y="200" width="300" height="80" fill="#51cf66" stroke="#a3e9a4" stroke-width="2" rx="6"/>
+  <text x="600" y="220" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Python sorted()</text>
+  <text x="600" y="240" font-size="11" fill="white" text-anchor="middle">or DataFrame.sort_values()</text>
+  <text x="600" y="260" font-size="11" fill="#fff3bf" text-anchor="middle">Uses Timsort</text>
+  <text x="600" y="280" font-size="10" fill="#e8eef7" text-anchor="middle">Stable, O(n log n) guaranteed</text>
+
+  <!-- Branch 3: Small config/lookup -->
+  <line x1="720" y1="140" x2="920" y2="200" stroke="#3d5a80" stroke-width="2"/>
+  <text x="820" y="165" font-size="11" fill="#7dd3fc" font-weight="bold">Hundreds</text>
+
+  <rect x="770" y="200" width="300" height="80" fill="#7c3aed" stroke="#a78bfa" stroke-width="2" rx="6"/>
+  <text x="920" y="220" font-size="12" font-weight="bold" fill="white" text-anchor="middle">In-Memory Sort</text>
+  <text x="920" y="240" font-size="11" fill="white" text-anchor="middle">at startup or per-batch</text>
+  <text x="920" y="260" font-size="11" fill="#fff3bf" text-anchor="middle">Sort once, binary search many</text>
+  <text x="920" y="280" font-size="10" fill="#e8eef7" text-anchor="middle">Micro-batches, config tables</text>
+
+  <!-- Critical warning box for small data -->
+  <rect x="770" y="300" width="300" height="100" fill="#1a2a47" stroke="#ec4899" stroke-width="2" rx="4"/>
+  <text x="920" y="325" font-size="11" font-weight="bold" fill="#f472b6" text-anchor="middle">Avoid naive quicksort!</text>
+  <text x="920" y="350" font-size="10" fill="#a8b8d8" text-anchor="middle">Even on small data, if your</text>
+  <text x="920" y="368" font-size="10" fill="#a8b8d8" text-anchor="middle">data is timestamp-ordered</text>
+  <text x="920" y="386" font-size="10" fill="#a8b8d8" text-anchor="middle">or pre-sorted, you hit O(n²)</text>
+
+  <!-- Key decision for all paths -->
+  <text x="600" y="450" font-size="16" font-weight="bold" fill="#e8eef7" text-anchor="middle">Critical Questions Before Coding</text>
+
+  <!-- Stability check -->
+  <rect x="50" y="480" width="350" height="120" fill="#1a2a47" stroke="#4c6ef5" stroke-width="2" rx="6"/>
+  <text x="225" y="510" font-size="13" font-weight="bold" fill="#7dd3fc" text-anchor="middle">Question 1: Need Stability?</text>
+  <text x="225" y="535" font-size="11" fill="#a8b8d8" text-anchor="middle">Do equal elements need to</text>
+  <text x="225" y="555" font-size="11" fill="#a8b8d8" text-anchor="middle">preserve their relative order?</text>
+  <text x="225" y="575" font-size="11" fill="#51cf66" text-anchor="middle">Yes: Merge sort, Timsort, dbt</text>
+
+  <!-- Input order check -->
+  <rect x="425" y="480" width="350" height="120" fill="#1a2a47" stroke="#4c6ef5" stroke-width="2" rx="6"/>
+  <text x="600" y="510" font-size="13" font-weight="bold" fill="#7dd3fc" text-anchor="middle">Question 2: Data Order?</text>
+  <text x="600" y="535" font-size="11" fill="#a8b8d8" text-anchor="middle">Timestamp-ordered? Already</text>
+  <text x="600" y="555" font-size="11" fill="#a8b8d8" text-anchor="middle">sorted? Nearly sorted?</text>
+  <text x="600" y="575" font-size="11" fill="#51cf66" text-anchor="middle">Yes: Timsort (exploits runs)</text>
+
+  <!-- Memory check -->
+  <rect x="800" y="480" width="350" height="120" fill="#1a2a47" stroke="#4c6ef5" stroke-width="2" rx="6"/>
+  <text x="975" y="510" font-size="13" font-weight="bold" fill="#7dd3fc" text-anchor="middle">Question 3: Memory Tight?</text>
+  <text x="975" y="535" font-size="11" fill="#a8b8d8" text-anchor="middle">Is O(n) auxiliary buffer a</text>
+  <text x="975" y="555" font-size="11" fill="#a8b8d8" text-anchor="middle">problem? (rare in modern DE)</text>
+  <text x="975" y="575" font-size="11" fill="#51cf66" text-anchor="middle">Yes: Quicksort + randomized pivot</text>
+
+  <!-- Final recommendations -->
+  <rect x="50" y="650" width="1100" height="120" fill="#1a2a47" stroke="#06b6d4" stroke-width="2" rx="6"/>
+  <text x="600" y="680" font-size="14" font-weight="bold" fill="#06b6d4" text-anchor="middle">Production Recommendations by Use Case</text>
+
+  <g font-size="11" fill="#a8b8d8">
+    <text x="80" y="710">Large scale (warehouse):  Don't code sort. Use ORDER BY or SortMergeJoin.</text>
+    <text x="80" y="735">Pandas/Python in-memory:  Use sorted() or df.sort_values(). Always stable by default with Timsort.</text>
+    <text x="80" y="760">Micro-batches/lookups:  Timsort for nearly-ordered data. Binary search for range queries on sorted config.</text>
+  </g>
+</svg>

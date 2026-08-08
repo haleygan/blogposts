@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#0e1b2f"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f87171"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+  
+  <text x="640" y="70" fill="#ffffff" font-size="28" font-weight="700" text-anchor="middle">Log Base: Big O Notation vs Physical Hardware Reads</text>
+  <text x="640" y="105" fill="#94a3b8" font-size="16" text-anchor="middle">Log bases differ only by a constant multiplier (dropped in Big O), but dictate actual I/O page fetches</text>
+
+  <!-- Left Card: Big O Math -->
+  <rect x="80" y="145" width="520" height="520" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="110" y="190" fill="#38bdf8" font-size="18" font-weight="700">1. Algorithmic Big O Classification</text>
+  <text x="110" y="218" fill="#94a3b8" font-size="14">Base change formula proves identical complexity class:</text>
+
+  <!-- Formula Card -->
+  <rect x="110" y="245" width="460" height="150" rx="12" fill="#0f172a" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="340" y="285" fill="#ffffff" font-size="18" font-weight="600" text-anchor="middle">log₂(n) = log₁₀(n) / log₁₀(2)</text>
+  <text x="340" y="325" fill="#38bdf8" font-size="20" font-weight="700" text-anchor="middle">= log₁₀(n) × 3.32</text>
+  <line x1="280" y1="345" x2="400" y2="345" stroke="#f87171" stroke-width="3"/>
+  <text x="340" y="375" fill="#f87171" font-size="13" font-weight="600" text-anchor="middle">Constant multiplier 3.32 is dropped</text>
+
+  <rect x="110" y="420" width="460" height="215" rx="12" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="130" y="455" fill="#34d399" font-size="15" font-weight="700">Rule for Design Docs &amp; Big O:</text>
+  <text x="130" y="485" fill="#cbd5e1" font-size="13">• log₂(n), log₁₀(n), and log₃₀₀(n) share the same curve.</text>
+  <text x="130" y="515" fill="#cbd5e1" font-size="13">• Always write O(log n) without specifying the base.</text>
+  <text x="130" y="545" fill="#cbd5e1" font-size="13">• The growth shape is logarithmic regardless of base.</text>
+  <text x="130" y="585" fill="#38bdf8" font-size="13" font-weight="600">Conclusion: Notation simplifies away the constant.</text>
+
+  <!-- Right Card: Physical Counting -->
+  <rect x="680" y="145" width="520" height="520" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="710" y="190" fill="#fbbf24" font-size="18" font-weight="700">2. Physical Capacity Planning (200M Rows)</text>
+  <text x="710" y="218" fill="#94a3b8" font-size="14">Branching factor dictates physical memory / disk seeks:</text>
+
+  <!-- Binary search vs B-Tree bar comparison -->
+  <rect x="710" y="245" width="460" height="150" rx="12" fill="#0f172a" stroke="#d97706" stroke-width="1.5"/>
+  <text x="730" y="280" fill="#94a3b8" font-size="13" font-weight="600">Binary Search (Base 2):</text>
+  <rect x="730" y="295" width="380" height="24" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+  <text x="745" y="312" fill="#38bdf8" font-size="12" font-weight="bold">log₂(200,000,000) ≈ 28 comparison hops</text>
+
+  <text x="730" y="348" fill="#94a3b8" font-size="13" font-weight="600">Database B-Tree Index (Base 300):</text>
+  <rect x="730" y="360" width="120" height="24" rx="6" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+  <text x="745" y="377" fill="#34d399" font-size="12" font-weight="bold">≈ 4 page reads</text>
+
+  <rect x="710" y="420" width="460" height="215" rx="12" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="730" y="455" fill="#fbbf24" font-size="15" font-weight="700">Rule for Production Hardware:</text>
+  <text x="730" y="485" fill="#cbd5e1" font-size="13">• 28 random disk seeks on SSD/HDD = 10ms to 50ms latency.</text>
+  <text x="730" y="515" fill="#cbd5e1" font-size="13">• 4 buffer cache reads in Postgres = 0.05ms sub-millisecond.</text>
+  <text x="730" y="545" fill="#cbd5e1" font-size="13">• Matching the log base to page fanout gives the true I/O cost.</text>
+  <text x="730" y="585" fill="#fbbf24" font-size="13" font-weight="600">Conclusion: Capacity planning requires the real base.</text>
+
+</svg>

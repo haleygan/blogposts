@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#0e1b2f"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ffffff"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f87171"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+  
+  <!-- Title -->
+  <text x="640" y="75" fill="#ffffff" font-size="28" font-weight="700" text-anchor="middle">Handling Unavoidable O(n): Exact In-Memory Set vs Bloom Filter</text>
+  <text x="640" y="110" fill="#94a3b8" font-size="16" text-anchor="middle">Choosing between unbounded O(n) RAM growth (OOM risk) vs bounded O(1) bit arrays</text>
+
+  <!-- Left: In-memory set O(n) space -->
+  <rect x="80" y="150" width="520" height="510" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="110" y="195" fill="#f87171" font-size="18" font-weight="700">Exact Deduplication (Python Set)</text>
+  <text x="110" y="225" fill="#94a3b8" font-size="14">Stores full ID strings in memory: Space = O(n)</text>
+
+  <!-- Memory Box Growing -->
+  <rect x="110" y="255" width="460" height="150" rx="10" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="130" y="285" fill="#f87171" font-size="13" font-weight="bold">Heap Memory Growth Across 500M Stream:</text>
+
+  <rect x="130" y="305" width="80" height="24" rx="4" fill="#334155"/>
+  <text x="170" y="321" fill="#ffffff" font-size="11" text-anchor="middle">Hr 1: 10M IDs</text>
+
+  <rect x="220" y="305" width="100" height="24" rx="4" fill="#475569"/>
+  <text x="270" y="321" fill="#ffffff" font-size="11" text-anchor="middle">Hr 4: 100M IDs</text>
+
+  <rect x="330" y="305" width="120" height="24" rx="4" fill="#991b1b"/>
+  <text x="390" y="321" fill="#ffffff" font-size="11" text-anchor="middle">Hr 8: 300M (Thrash)</text>
+
+  <rect x="130" y="340" width="420" height="45" rx="6" fill="#7f1d1d" stroke="#f87171" stroke-width="1"/>
+  <text x="340" y="368" fill="#fca5a5" font-size="13" font-weight="bold" text-anchor="middle">Hr 12: 500M IDs → Container OOM Killed (Exit 137)</text>
+
+  <rect x="110" y="430" width="460" height="200" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="130" y="465" fill="#34d399" font-size="15" font-weight="700">Accuracy: 100% Exact</text>
+  <text x="130" y="495" fill="#cbd5e1" font-size="13">• Zero false positives, zero false negatives.</text>
+  <text x="130" y="525" fill="#cbd5e1" font-size="13">• Required for: Financial ledgers, double-spend checks.</text>
+  <text x="130" y="555" fill="#f87171" font-size="13" font-weight="bold">• The Fix: Offload to Redis with 24-hr TTL.</text>
+  <text x="130" y="580" fill="#cbd5e1" font-size="12">  Keeps local process memory O(1) while purging expired keys.</text>
+
+  <!-- Right: Bloom filter O(1) space -->
+  <rect x="680" y="150" width="520" height="510" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="710" y="195" fill="#38bdf8" font-size="18" font-weight="700">Probabilistic Deduplication (Bloom Filter)</text>
+  <text x="710" y="225" fill="#94a3b8" font-size="14">Fixed-size bit array + k hash functions: Space = O(1)</text>
+
+  <!-- Bit array visualization -->
+  <rect x="710" y="255" width="460" height="150" rx="10" fill="#0f172a" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="730" y="285" fill="#38bdf8" font-size="13" font-weight="bold">Fixed Bit Array (Constant RAM Footprint):</text>
+
+  <!-- Bit slots -->
+  <g transform="translate(730, 310)">
+    <rect x="0" y="0" width="36" height="34" rx="4" fill="#1e293b" stroke="#475569"/><text x="18" y="22" fill="#94a3b8" font-size="12" text-anchor="middle">0</text>
+    <rect x="42" y="0" width="36" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="2"/><text x="60" y="22" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">1</text>
+    <rect x="84" y="0" width="36" height="34" rx="4" fill="#1e293b" stroke="#475569"/><text x="102" y="22" fill="#94a3b8" font-size="12" text-anchor="middle">0</text>
+    <rect x="126" y="0" width="36" height="34" rx="4" fill="#1e293b" stroke="#475569"/><text x="144" y="22" fill="#94a3b8" font-size="12" text-anchor="middle">0</text>
+    <rect x="168" y="0" width="36" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="2"/><text x="186" y="22" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">1</text>
+    <rect x="210" y="0" width="36" height="34" rx="4" fill="#1e293b" stroke="#475569"/><text x="228" y="22" fill="#94a3b8" font-size="12" text-anchor="middle">0</text>
+    <rect x="252" y="0" width="36" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="2"/><text x="270" y="22" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">1</text>
+    <rect x="294" y="0" width="36" height="34" rx="4" fill="#1e293b" stroke="#475569"/><text x="312" y="22" fill="#94a3b8" font-size="12" text-anchor="middle">0</text>
+  </g>
+  <text x="730" y="375" fill="#94a3b8" font-size="12">k independent hash functions flip specific bits ON</text>
+
+  <rect x="710" y="430" width="460" height="200" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="730" y="465" fill="#38bdf8" font-size="15" font-weight="700">Accuracy: Asymmetric Guarantee</text>
+  <text x="730" y="495" fill="#34d399" font-size="13">• If bit is 0: Guaranteed 100% NOT seen (0 false negatives).</text>
+  <text x="730" y="525" fill="#f59e0b" font-size="13">• If bits are 1: Probably seen (minor false positive rate ~1%).</text>
+  <text x="730" y="555" fill="#cbd5e1" font-size="13">• Ideal for: Ad impressions, click tracking, web crawler URLs.</text>
+  <text x="730" y="580" fill="#cbd5e1" font-size="12">  Fixed memory budget never grows or triggers OOM.</text>
+
+</svg>

@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#0e1b2f"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ffffff"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f87171"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+  
+  <!-- Title -->
+  <text x="640" y="80" fill="#ffffff" font-size="28" font-weight="700" text-anchor="middle">Hash Table Direct Jump vs Collision Degradation</text>
+  <text x="640" y="115" fill="#94a3b8" font-size="16" text-anchor="middle">High-cardinality keys yield O(1) jump; low-cardinality keys degrade into O(n) linear scan</text>
+
+  <!-- Left: Ideal O(1) -->
+  <rect x="80" y="160" width="520" height="490" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="110" y="205" fill="#38bdf8" font-size="18" font-weight="700">Ideal Case: High Cardinality — O(1)</text>
+  <text x="110" y="235" fill="#94a3b8" font-size="14">UUID / Transaction ID: each key hashes to an empty bucket</text>
+
+  <!-- Key -->
+  <rect x="110" y="265" width="140" height="45" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="180" y="293" fill="#ffffff" font-size="14" font-weight="600" text-anchor="middle">"tx_9482"</text>
+
+  <!-- Arrow to Hash -->
+  <path d="M 255 287 L 305 287" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="280" y="277" fill="#cbd5e1" font-size="12" text-anchor="middle">hash() % 8</text>
+
+  <!-- Buckets -->
+  <!-- Bucket 0 -->
+  <rect x="330" y="260" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="370" y="282" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 0</text>
+
+  <!-- Bucket 1 -->
+  <rect x="330" y="302" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="370" y="324" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 1</text>
+
+  <!-- Bucket 2 (Target) -->
+  <rect x="330" y="344" width="80" height="34" rx="6" fill="#0369a1" stroke="#38bdf8" stroke-width="2"/>
+  <text x="370" y="366" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">Slot 2</text>
+
+  <path d="M 310 287 C 315 287, 315 361, 325 361" stroke="#38bdf8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Bucket 2 Data -->
+  <path d="M 415 361 L 445 361" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="450" y="340" width="130" height="42" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="515" y="366" fill="#38bdf8" font-size="12" font-weight="600" text-anchor="middle">tx_9482: $450.00</text>
+
+  <!-- Bucket 3 -->
+  <rect x="330" y="386" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="370" y="408" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 3</text>
+
+  <!-- Bucket 4 -->
+  <rect x="330" y="428" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="370" y="450" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 4</text>
+
+  <rect x="110" y="500" width="460" height="120" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="130" y="535" fill="#34d399" font-size="15" font-weight="700">Cost: 1 hash + 1 direct memory jump = O(1)</text>
+  <text x="130" y="565" fill="#cbd5e1" font-size="13">No traversing. Key immediately maps to memory address.</text>
+  <text x="130" y="590" fill="#cbd5e1" font-size="13">Lookup speed is independent of total dataset volume n.</text>
+
+  <!-- Right: Worst Case Collision O(n) -->
+  <rect x="680" y="160" width="520" height="490" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="710" y="205" fill="#f87171" font-size="18" font-weight="700">Worst Case: Low Cardinality — Degrades to O(n)</text>
+  <text x="710" y="235" fill="#94a3b8" font-size="14">Keying on is_international / country_code: all keys hit slot 2</text>
+
+  <!-- Bucket Column -->
+  <rect x="710" y="260" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="750" y="282" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 0</text>
+
+  <rect x="710" y="302" width="80" height="34" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="750" y="324" fill="#94a3b8" font-size="12" text-anchor="middle">Slot 1</text>
+
+  <rect x="710" y="344" width="80" height="34" rx="6" fill="#991b1b" stroke="#f87171" stroke-width="2"/>
+  <text x="750" y="366" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">Slot 2</text>
+
+  <!-- Collision Linked List Chain -->
+  <path d="M 795 361 L 825 361" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-rose)"/>
+  <rect x="830" y="342" width="90" height="38" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="1.5"/>
+  <text x="875" y="366" fill="#cbd5e1" font-size="11" text-anchor="middle">Item 1</text>
+
+  <path d="M 925 361 L 955 361" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-rose)"/>
+  <rect x="960" y="342" width="90" height="38" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="1.5"/>
+  <text x="1005" y="366" fill="#cbd5e1" font-size="11" text-anchor="middle">Item 2</text>
+
+  <path d="M 1055 361 L 1080 361" stroke="#f87171" stroke-width="2" stroke-dasharray="3,3"/>
+  <rect x="1085" y="342" width="90" height="38" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="1.5"/>
+  <text x="1130" y="366" fill="#f87171" font-size="11" font-weight="700" text-anchor="middle">Item n</text>
+
+  <rect x="710" y="500" width="460" height="120" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="730" y="535" fill="#f87171" font-size="15" font-weight="700">Cost: 1 hash + sequential scan through n items = O(n)</text>
+  <text x="730" y="565" fill="#cbd5e1" font-size="13">When collisions accumulate, hash table acts like a linked list.</text>
+  <text x="730" y="590" fill="#cbd5e1" font-size="13">Must compare every element sequentially to find target.</text>
+
+</svg>

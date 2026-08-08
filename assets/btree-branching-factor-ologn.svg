@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#0e1b2f"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ffffff"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f87171"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+  
+  <!-- Title -->
+  <text x="640" y="75" fill="#ffffff" font-size="28" font-weight="700" text-anchor="middle">Halving Mechanics: Binary Search vs Database B-Tree</text>
+  <text x="640" y="110" fill="#94a3b8" font-size="16" text-anchor="middle">Both are O(log n), but branching factor dictates actual disk/memory page reads</text>
+
+  <!-- Left: Binary Search (Branching factor 2) -->
+  <rect x="80" y="150" width="520" height="510" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="110" y="195" fill="#38bdf8" font-size="18" font-weight="700">Binary Search: Branching Factor = 2</text>
+  <text x="110" y="225" fill="#94a3b8" font-size="14">Cuts space exactly in half per step: log₂(n)</text>
+
+  <!-- Tree visualization -->
+  <!-- Root -->
+  <circle cx="340" cy="275" r="22" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+  <text x="340" y="281" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Root</text>
+
+  <!-- Level 1 -->
+  <path d="M 325 292 L 235 345" stroke="#475569" stroke-width="2"/>
+  <path d="M 355 292 L 445 345" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <circle cx="230" cy="355" r="18" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <circle cx="450" cy="355" r="18" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Level 2 -->
+  <path d="M 440 370 L 395 420" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M 460 370 L 505 420" stroke="#475569" stroke-width="2"/>
+
+  <circle cx="390" cy="430" r="18" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+  <circle cx="510" cy="430" r="18" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+
+  <!-- Stats Box -->
+  <rect x="110" y="495" width="460" height="135" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="130" y="530" fill="#38bdf8" font-size="15" font-weight="700">For 200,000,000 records:</text>
+  <text x="130" y="560" fill="#cbd5e1" font-size="13">Depth = log₂(200,000,000) ≈ 28 comparison steps</text>
+  <text x="130" y="585" fill="#cbd5e1" font-size="13">Eliminates 50% remaining search space per level.</text>
+  <text x="130" y="610" fill="#cbd5e1" font-size="13">Ideal for memory arrays where memory hops are cheap.</text>
+
+  <!-- Right: B-Tree (Branching factor ~300) -->
+  <rect x="680" y="150" width="520" height="510" rx="16" fill="#13233b" stroke="#334155" stroke-width="2"/>
+  <text x="710" y="195" fill="#34d399" font-size="18" font-weight="700">Postgres B-Tree Index: Branching Factor ≈ 300</text>
+  <text x="710" y="225" fill="#94a3b8" font-size="14">Each page holds hundreds of keys: log₃₀₀(n)</text>
+
+  <!-- B-tree visualization -->
+  <!-- Root Page -->
+  <rect x="850" y="255" width="180" height="38" rx="8" fill="#065f46" stroke="#34d399" stroke-width="2"/>
+  <text x="940" y="279" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Root Page (300 keys)</text>
+
+  <!-- Multi-branch arrows -->
+  <path d="M 880 295 L 770 350" stroke="#475569" stroke-width="1.5"/>
+  <path d="M 940 295 L 940 350" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrow-emerald)"/>
+  <path d="M 1000 295 L 1110 350" stroke="#475569" stroke-width="1.5"/>
+
+  <!-- Level 1 Page -->
+  <rect x="850" y="355" width="180" height="38" rx="8" fill="#065f46" stroke="#34d399" stroke-width="2"/>
+  <text x="940" y="379" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Internal Node (300 keys)</text>
+
+  <path d="M 940 395 L 940 440" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Leaf Page -->
+  <rect x="850" y="445" width="180" height="38" rx="8" fill="#047857" stroke="#34d399" stroke-width="2"/>
+  <text x="940" y="469" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Leaf Page (Data Pointers)</text>
+
+  <!-- Stats Box -->
+  <rect x="710" y="495" width="460" height="135" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="730" y="530" fill="#34d399" font-size="15" font-weight="700">For 200,000,000 records:</text>
+  <text x="730" y="560" fill="#cbd5e1" font-size="13">Depth = log₃₀₀(200,000,000) ≈ 3 to 4 page reads</text>
+  <text x="730" y="585" fill="#cbd5e1" font-size="13">Eliminates 99.7% of remaining candidates per level.</text>
+  <text x="730" y="610" fill="#cbd5e1" font-size="13">0.05ms execution time: only 4 disk/buffer cache hits!</text>
+
+</svg>
