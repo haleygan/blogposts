@@ -255,8 +255,13 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
 
     code: ({ className, children }: { className?: string; children?: React.ReactNode }) => {
       const lang = /language-(\w+)/.exec(className ?? '')?.[1] ?? '';
-      if (lang || className?.startsWith('language-')) {
-        const code = String(children ?? '').replace(/\n$/, '');
+      const codeString = String(children ?? '');
+      // Fenced blocks without a language tag still land here with no className,
+      // but they're multi-line — treat any code containing a newline as a block,
+      // not just ones with an explicit language, so whitespace/line breaks survive.
+      const isBlock = Boolean(lang) || className?.startsWith('language-') || codeString.includes('\n');
+      if (isBlock) {
+        const code = codeString.replace(/\n$/, '');
         return <CodeBlock code={code} language={lang} />;
       }
       return (

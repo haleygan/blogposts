@@ -130,12 +130,7 @@ def fib_memo(n, cache={}):
 
 The only change is checking the cache before computing. When you hit a cached result, you return it in O(1) time. You solve each unique sub-problem exactly once, then look it up every time after.
 
-The impact is stunning:
-
-```
-fib(50) naive:      40 billion calls
-fib(50) memoized:   50 calls
-```
+The impact is stunning: fib(50) naive takes 40 billion calls; memoized, it takes 50.
 
 The time complexity collapses from O(2ⁿ) to O(n). But you paid a price: the cache stores n entries, so space becomes O(n) instead of just the recursion stack.
 
@@ -189,7 +184,7 @@ The number of possible table subsets for n tables is exactly 2ⁿ. Every subset 
 
 This is why Postgres has hard limits:
 
-```
+```sql
 SHOW join_collapse_limit;     -- default: 8
 SHOW geqo_threshold;          -- default: 12
 ```
@@ -206,19 +201,17 @@ Now we move to factorial time. This is where growth transcends explosive and bec
 
 The difference is subtle but absolute. In O(2ⁿ), every increase of 1 multiplies work by 2. In O(n!), every increase of 1 multiplies work by n itself.
 
-```
-n! = n × (n-1) × (n-2) × ... × 1
-```
+`n! = n × (n-1) × (n-2) × ... × 1`
 
 Look at the multiplier:
 
-```
-1! = 1       ← multiplied by 1
-2! = 2       ← multiplied by 2
-3! = 6       ← multiplied by 3
-4! = 24      ← multiplied by 4
-5! = 120     ← multiplied by 5
-```
+| n | n! | Multiplier |
+| :--- | :--- | :--- |
+| 1 | 1 | × 1 |
+| 2 | 2 | × 2 |
+| 3 | 6 | × 3 |
+| 4 | 24 | × 4 |
+| 5 | 120 | × 5 |
 
 As n grows, the multiplier grows with it. At n=10 you multiply by 10. At n=100 you multiply by 100.
 
@@ -265,11 +258,11 @@ Each iteration computes the tour length by summing n edges. So the work per iter
 
 But here's something important. You'd think storing all 362,880 permutations in memory would require 362,880 × n space. But `itertools.permutations` is a generator. It produces one permutation at a time and discards it. At any moment you only hold:
 
-```
-current permutation:   O(n)    ← one tuple of n cities
-best_tour:             O(n)    ← one tuple of n cities
-best_length:           O(1)    ← one float
-```
+| Variable | Space | What it holds |
+| :--- | :--- | :--- |
+| `current permutation` | O(n) | one tuple of n cities |
+| `best_tour` | O(n) | one tuple of n cities |
+| `best_length` | O(1) | one float |
 
 Total space: O(n).
 
@@ -283,13 +276,13 @@ Now let's see where O(n!) becomes physically impossible.
 
 A modern computer does roughly 1 billion operations per second.
 
-```
-n=10:  9!  ≈         363,000 ops  → 0.0004 seconds  ✓
-n=15:  14! ≈  87 billion ops  → 87 seconds       ✓
-n=17:  16! ≈  20 trillion ops  → 5.8 hours       ✗
-n=20:  19! ≈  1.2 × 10¹⁷ ops  → 3.8 years       ✗
-n=25:  24! → too large to calculate → longer than universe age ✗
-```
+| n | Operations | Time | Feasible? |
+| :--- | :--- | :--- | :---: |
+| 10 | 9! ≈ 363,000 ops | 0.0004 seconds | ✓ |
+| 15 | 14! ≈ 87 billion ops | 87 seconds | ✓ |
+| 17 | 16! ≈ 20 trillion ops | 5.8 hours | ✗ |
+| 20 | 19! ≈ 1.2 × 10¹⁷ ops | 3.8 years | ✗ |
+| 25 | 24! → too large to calculate | longer than universe age | ✗ |
 
 Brute force TSP becomes physically impossible around n=17, even as a one-time precomputation.
 
@@ -321,12 +314,7 @@ Start at city 0. Look at all unvisited cities. Go to the closest one. Repeat.
 
 The outer loop runs n times. Each iteration scans the remaining unvisited cities, which is O(n). Total: n × n = O(n²).
 
-For n=15:
-
-```
-Brute force:   14! = 87 billion operations
-Nearest neighbor:  15² = 225 operations
-```
+For n=15: brute force costs 14! = 87 billion operations. Nearest neighbor costs 15² = 225 operations.
 
 Nearest neighbor is 387 million times faster. But it's greedy. It always picks the locally closest city, not the globally shortest route.
 
