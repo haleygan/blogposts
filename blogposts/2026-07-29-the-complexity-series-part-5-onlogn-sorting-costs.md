@@ -143,19 +143,16 @@ How many levels are there? We divide by 2 each time, so there are log(n) levels.
 
 Total: log(n) levels × O(n) work per level = O(n log n).
 
-Here is what that looks like empirically:
+Here is what that looks like empirically (n = 8):
 
-```
-n = 8
+| Level | Structure | Work |
+| :--- | :--- | :--- |
+| 0 | [8] | 1 array, 8 elements, 0 comparisons yet |
+| 1 | [4] [4] | split, merge: 8 comparisons |
+| 2 | [2] [2] [2] [2] | split, merge: 8 comparisons |
+| 3 | [1] [1] [1] [1] [1] [1] [1] [1] | split, merge: 8 comparisons |
 
-Level 0: [8]                   → 1 array, 8 elements, 0 comparisons yet
-Level 1: [4] [4]              → split, merge: 8 comparisons
-Level 2: [2] [2] [2] [2]      → split, merge: 8 comparisons
-Level 3: [1] [1] [1] [1] [1] [1] [1] [1] → split, merge: 8 comparisons
-
-Total: 3 levels, 8 comparisons per level = 24 ops
-log2(8) = 3, so n log n = 8 × 3 = 24
-```
+**Total:** 3 levels × 8 comparisons per level = 24 ops. Since log₂(8) = 3, n log n = 8 × 3 = 24.
 
 ![Merge sort recursion tree](assets/merge-sort-tree.svg)
 

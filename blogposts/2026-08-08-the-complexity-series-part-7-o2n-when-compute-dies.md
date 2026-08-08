@@ -82,13 +82,13 @@ Now imagine each call isn't just adding two numbers. Imagine it's hitting a data
 
 For larger n, the scale becomes unconscionable:
 
-```
-fib(10)  →  177 calls
-fib(20)  →  21,891 calls
-fib(30)  →  2,692,537 calls
-fib(40)  →  331,160,281 calls
-fib(50)  →  40,730,022,147 calls
-```
+| n | Function Calls |
+| :--- | :--- |
+| 10 | 177 |
+| 20 | 21,891 |
+| 30 | 2,692,537 |
+| 40 | 331,160,281 |
+| 50 | 40,730,022,147 |
 
 Every call to `fib(n)` spawns exactly two more calls. The tree branches by 2 at every level. A tree n levels deep, branching by 2 at each level, produces O(2ⁿ) total nodes. That's where the label comes from.
 
@@ -141,10 +141,14 @@ The time complexity collapses from O(2ⁿ) to O(n). But you paid a price: the ca
 
 > You spent O(n) space you were already close to spending anyway, and bought back an entire complexity class in time.
 
-This is the foundation of dynamic programming. And it shows up constantly in data engineering:
+This is the foundation of dynamic programming. To show the impact at scale:
 
-- **Naive recursive rollup:** recomputes region revenue exponentially
-- **Memoized recursive rollup:** computes each region's revenue once, stores it in a lookup table
+| Approach | fib(50) |
+| :--- | :--- |
+| Naive recursive | 40 billion calls |
+| Memoized | 50 calls |
+
+The speedup is staggering: you trade O(n) space for O(2ⁿ) time, and at n=50 that trade buys you a 800-million-times speedup. This pattern shows up constantly in data engineering: naive recursive rollups that recompute region revenue exponentially, versus memoized versions that compute each region's revenue once and store it in a lookup table.
 
 ## O(2ⁿ) in Your Database
 

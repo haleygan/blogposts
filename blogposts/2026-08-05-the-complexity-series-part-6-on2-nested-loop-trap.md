@@ -126,25 +126,25 @@ These are exactly the inputs that trigger the worst case on naive quicksort.
 
 Let me show you what this looks like in real benchmarks. Here's quicksort with a naive last-element pivot, tested on both sorted and random data:
 
-```
-=== SORTED INPUT (worst case) ===
-     n |     time (s) |  ratio vs prev
-----------------------------------------
-   200 |     0.002441 |              -
-   400 |     0.009823 |           4.0x
-   800 |     0.039601 |           4.0x
-  1600 |     0.158241 |           4.0x
+**Sorted Input (Worst Case — O(n²)):**
 
-=== RANDOM INPUT (average case) ===
-     n |     time (s) |  ratio vs prev
-----------------------------------------
-   200 |     0.000312 |              -
-   400 |     0.000701 |           2.2x
-   800 |     0.001598 |           2.3x
-  1600 |     0.003721 |           2.3x
-```
+| n | Time (s) | Ratio vs Prev |
+| :--- | :--- | :--- |
+| 200 | 0.002441 | — |
+| 400 | 0.009823 | 4.0× |
+| 800 | 0.039601 | 4.0× |
+| 1600 | 0.158241 | 4.0× |
 
-Look at those ratio columns side by side.
+**Random Input (Average Case — O(n log n)):**
+
+| n | Time (s) | Ratio vs Prev |
+| :--- | :--- | :--- |
+| 200 | 0.000312 | — |
+| 400 | 0.000701 | 2.2× |
+| 800 | 0.001598 | 2.3× |
+| 1600 | 0.003721 | 2.3× |
+
+Look at the ratio columns side by side.
 
 Sorted input: exactly 4x every time. The O(n²) doubling signature, precise and consistent.
 
@@ -182,16 +182,12 @@ With a random pivot, no fixed input shape can reliably trigger the worst case an
 
 Here's the before-and-after on sorted data:
 
-```
-=== SORTED INPUT, naive vs randomized pivot ===
-
-     n | naive O(n²) | randomized O(nlogn) | speedup
-------------------------------------------------------
-   200 |    0.002441 |            0.000198 |   12.3x
-   400 |    0.009823 |            0.000421 |   23.3x
-   800 |    0.039601 |            0.000891 |   44.4x
-  1600 |    0.158241 |            0.001901 |   83.2x
-```
+| n | Naive O(n²) | Randomized O(n log n) | Speedup |
+| :--- | :--- | :--- | :--- |
+| 200 | 0.002441 s | 0.000198 s | 12.3× |
+| 400 | 0.009823 s | 0.000421 s | 23.3× |
+| 800 | 0.039601 s | 0.000891 s | 44.4× |
+| 1600 | 0.158241 s | 0.001901 s | 83.2× |
 
 Notice the speedup column keeps growing as n increases. That's the signature of two different complexity classes diverging. At n=1600 the randomized version is 83x faster on the same sorted input.
 
