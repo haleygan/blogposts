@@ -143,11 +143,8 @@ The time complexity collapses from O(2ⁿ) to O(n). But you paid a price: the ca
 
 This is the foundation of dynamic programming. And it shows up constantly in data engineering:
 
-```
-Naive recursive rollup:   recomputes region revenue exponentially
-Memoized recursive rollup:  computes each region's revenue once
-                           stores it in a lookup table
-```
+- **Naive recursive rollup:** recomputes region revenue exponentially
+- **Memoized recursive rollup:** computes each region's revenue once, stores it in a lookup table
 
 ## O(2ⁿ) in Your Database
 

@@ -76,9 +76,7 @@ When you partition an array of size `k`, you must compare every other element ag
 
 For an array of `n` elements with this degenerate pattern, the total comparisons are:
 
-```
-(n-1) + (n-2) + (n-3) + ... + 1 + 0
-```
+`(n-1) + (n-2) + (n-3) + ... + 1 + 0`
 
 This is a triangular sum, and there's a classical mathematical identity for it. Let me walk through it the way you'd derive it on a whiteboard.
 
