@@ -1,0 +1,28 @@
+<svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="640" fill="#0e1b2f"/>
+  <text x="600" y="50" font-size="22" font-weight="bold" fill="#e8eef7" text-anchor="middle">Broad to Narrow</text>
+
+  <!-- Funnel shape via polygons, wide top to narrow bottom -->
+  <polygon points="220,100 980,100 800,260 400,260" fill="#5c7cfa" stroke="#748ffc" stroke-width="2"/>
+  <text x="600" y="150" font-size="16" font-weight="bold" fill="white" text-anchor="middle">psutil</text>
+  <text x="600" y="175" font-size="12" fill="#e8eef7" text-anchor="middle">is the process growing? how fast?</text>
+  <text x="600" y="200" font-size="11" fill="#dbe4fa" text-anchor="middle">RSS sampled before / after each batch</text>
+
+  <polygon points="400,270 800,270 660,400 540,400" fill="#f76707" stroke="#fd7e14" stroke-width="2"/>
+  <text x="600" y="320" font-size="16" font-weight="bold" fill="white" text-anchor="middle">tracemalloc</text>
+  <text x="600" y="345" font-size="12" fill="#fff3bf" text-anchor="middle">which line is allocating?</text>
+  <text x="600" y="368" font-size="11" fill="#ffe8cc" text-anchor="middle">snapshot compare, size / count / average</text>
+
+  <polygon points="540,410 660,410 615,520 585,520" fill="#7c3aed" stroke="#a78bfa" stroke-width="2"/>
+  <text x="600" y="470" font-size="15" font-weight="bold" fill="white" text-anchor="middle">objgraph</text>
+  <text x="600" y="492" font-size="11" fill="#e0d4fc" text-anchor="middle">which object type never</text>
+  <text x="600" y="508" font-size="11" fill="#e0d4fc" text-anchor="middle">gets released?</text>
+
+  <line x1="600" y1="530" x2="600" y2="580" stroke="#3d5a80" stroke-width="2" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d5a80"/>
+    </marker>
+  </defs>
+  <text x="600" y="610" font-size="13" fill="#a8b8d8" text-anchor="middle">one specific line of code, confirmed</text>
+</svg>

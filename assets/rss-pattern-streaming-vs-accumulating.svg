@@ -1,0 +1,32 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="600" fill="#0e1b2f"/>
+
+  <!-- Axes -->
+  <line x1="120" y1="500" x2="1120" y2="500" stroke="#3d5a80" stroke-width="2"/>
+  <line x1="120" y1="80" x2="120" y2="500" stroke="#3d5a80" stroke-width="2"/>
+  <text x="1120" y="530" font-size="13" fill="#a8b8d8" text-anchor="end">batches processed</text>
+  <text x="70" y="90" font-size="13" fill="#a8b8d8" text-anchor="middle" transform="rotate(-90 70 90)">RSS</text>
+
+  <!-- Job A: flat line -->
+  <polyline points="160,430 260,428 360,431 460,429 560,430 660,428 760,431 860,429 960,430 1060,428"
+            fill="none" stroke="#51cf66" stroke-width="4"/>
+  <circle cx="1060" cy="428" r="7" fill="#51cf66"/>
+  <text x="1080" y="420" font-size="15" font-weight="bold" fill="#51cf66">Job A</text>
+  <text x="1080" y="440" font-size="12" fill="#a3e9a4">streaming, releases each batch</text>
+
+  <!-- Job B: climbing line -->
+  <polyline points="160,470 260,430 360,390 460,350 560,310 660,270 760,230 860,190 960,150 1060,110"
+            fill="none" stroke="#f76707" stroke-width="4"/>
+  <circle cx="1060" cy="110" r="7" fill="#f76707"/>
+  <text x="1080" y="108" font-size="15" font-weight="bold" fill="#f76707">Job B</text>
+  <text x="1080" y="128" font-size="12" fill="#fd9d5c">accumulating, never releases</text>
+
+  <!-- shelf motif on the left, near baseline -->
+  <g transform="translate(160,500)">
+    <rect x="-30" y="-40" width="60" height="14" fill="#1a2a47" stroke="#4c6ef5" stroke-width="1.5"/>
+    <rect x="-30" y="-22" width="60" height="14" fill="#1a2a47" stroke="#4c6ef5" stroke-width="1.5"/>
+    <rect x="-30" y="-4" width="60" height="14" fill="#1a2a47" stroke="#4c6ef5" stroke-width="1.5"/>
+  </g>
+
+  <text x="600" y="40" font-size="22" font-weight="bold" fill="#e8eef7" text-anchor="middle">Two Jobs, Same Workload</text>
+</svg>
