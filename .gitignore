@@ -8,3 +8,5 @@ dist/
 .env.local
 *.zip
 metadata.json
+.DS_Store
+
