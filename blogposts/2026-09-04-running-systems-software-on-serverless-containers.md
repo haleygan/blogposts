@@ -1,6 +1,6 @@
 ---
 id: running-systems-software-on-serverless-containers
-title: "The Choice of Cloud Run Gen2 over Gen1 for Redpanda Deployment"
+title: "Why You Should Choose GCP Cloud Run Gen2 for Redpanda Deployment Instead of Gen1"
 date: September 4, 2026
 excerpt: Cloud Run Gen1 uses a syscall sandbox that silently breaks high-performance systems software like Redpanda. Here is why Gen2 is the correct choice and how to evaluate this for any data engine.
 readTime: 12 minutes read
