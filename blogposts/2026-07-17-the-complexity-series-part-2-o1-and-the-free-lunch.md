@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. **O(1) and the Free Lunch** _(you are here)_
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 Part 1 established that Big O describes growth, not speed. Now we look at the one complexity class where growth is zero: O(1).
@@ -189,7 +204,7 @@ def get_country(user_id):
 
 Same data. Same result. The list version gets slower with every user added. The dictionary version never changes speed.
 
-**Redis GET** — O(1) at infrastructure scale:
+**[Redis](https://redis.io/) GET** — O(1) at infrastructure scale:
 
 ```python
 # 10 million users in Redis, still O(1) per lookup
@@ -198,7 +213,7 @@ value = redis_client.get("user:1234:features")
 
 Redis is essentially a hash table on a server. The key gets hashed to a memory slot. Direct jump. It doesn't matter if Redis holds 1,000 keys or 100,000,000 — lookup time stays flat. That's why Redis is the backbone of real-time enrichment pipelines.
 
-**Spark broadcast join** — turning a shuffle into local O(1) lookups:
+**[Spark](https://spark.apache.org/) broadcast join** — turning a shuffle into local O(1) lookups:
 
 ```python
 # Without broadcast: Spark shuffles both tables across the cluster
@@ -432,7 +447,7 @@ This turns O(n×t×k) into O(n) — one row per customer, no nested loops.
 
 ## The join strategy decision
 
-When Spark or Postgres runs a join, it's solving this exact O(n×m) vs O(n+m) equation at runtime. Query planners don't pick a strategy randomly. They estimate input sizes and calculate which strategy costs fewer operations.
+When Spark or [Postgres](https://www.postgresql.org/) runs a join, it's solving this exact O(n×m) vs O(n+m) equation at runtime. Query planners don't pick a strategy randomly. They estimate input sizes and calculate which strategy costs fewer operations.
 
 The four strategies, derived from first principles:
 
@@ -470,7 +485,7 @@ Sort both tables on the join key, then walk two pointers through both sorted seq
 
 **Index nested loop join: O(n log m)**
 
-Like nested loop, but instead of scanning all of table_b for each row, you binary-search a B-tree index:
+Like nested loop, but instead of scanning all of table_b for each row, you binary-search a [B-tree](https://en.wikipedia.org/wiki/B-tree) index:
 
 ```python
 for row_a in table_a:                               # n iterations
@@ -561,4 +576,4 @@ Part 3 covers O(log n): the halving pattern that turns a 48-second sequential sc
 
 ---
 
-*The Complexity Series is a 10-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*
+*The Complexity Series is a 9-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*

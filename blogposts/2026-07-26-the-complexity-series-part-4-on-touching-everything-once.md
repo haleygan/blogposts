@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. **O(n) and Touching Everything Once** _(you are here)_
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 Part 3 showed that O(log n) algorithms exploit structure: they need data sorted or indexed so they can eliminate half the search space at each step. O(n) is what happens when no such structure exists, or when the task itself requires every record regardless.
@@ -36,7 +51,7 @@ Linear growth is proportional. If your data volume doubles, your runtime doubles
 
 ## When O(n) is unavoidable
 
-Start with the simplest case. You have a Kafka topic with 10 million transaction events. Your job is to calculate total revenue across all of them.
+Start with the simplest case. You have a [Kafka](https://kafka.apache.org/) topic with 10 million transaction events. Your job is to calculate total revenue across all of them.
 
 Can you skip any message? No. The answer depends on every record. That's the defining property of O(n): the task requires every element, and there's no structure to exploit that would let you eliminate any subset.
 
@@ -146,7 +161,7 @@ Once you've identified the problem, you face a real engineering decision: how do
 
 ## Option 1: Bloom filters — trading exactness for bounded memory
 
-A Bloom filter is a fixed-size bit array. Unlike `seen_ids`, it doesn't grow with n. It uses O(1) space regardless of how many items you insert. The tradeoff is that it can occasionally be wrong.
+A [Bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) is a fixed-size bit array. Unlike `seen_ids`, it doesn't grow with n. It uses O(1) space regardless of how many items you insert. The tradeoff is that it can occasionally be wrong.
 
 Here's how it works. All bits start at 0:
 
@@ -233,7 +248,7 @@ This is the kind of judgment a senior engineer makes. The algorithm choice is no
 
 For the payments case, you chose exact dedup. But the OOM problem remains: you can't hold 500 million IDs in your application's memory.
 
-The solution: move the state out of your process and into Redis.
+The solution: move the state out of your process and into [Redis](https://redis.io/).
 
 ```python
 import redis
@@ -383,7 +398,7 @@ The individual function looks fine. The complexity problem only appears when you
 
 ## Kafka and the unavoidable O(n)
 
-Kafka partitions are ordered by offset — arrival time — not by any business key like transaction amount or user ID. This is fundamentally different from a B-tree index.
+Kafka partitions are ordered by offset — arrival time — not by any business key like transaction amount or user ID. This is fundamentally different from a [B-tree](https://en.wikipedia.org/wiki/B-tree) index.
 
 A B-tree index on `amount` is sorted by amount. You can binary search it. O(log n) to find all transactions over $1,000.
 
@@ -460,7 +475,7 @@ Space: the hash table holds all m merchants. O(m) auxiliary space.
 
 The build phase is unavoidable: you need every merchant in the lookup table before you can probe. But notice what this means for your job's memory footprint: the smaller table must fit in memory entirely before processing begins.
 
-If both tables are large, you cannot build the hash table for the larger one. This is when Spark or Postgres falls back to sort-merge join — which also requires O(n) space for the sort buffers, but distributes that cost differently. The tradeoff between join strategies is partly a conversation about which O(n) space bill you're willing to pay.
+If both tables are large, you cannot build the hash table for the larger one. This is when [Spark](https://spark.apache.org/) or [Postgres](https://www.postgresql.org/) falls back to sort-merge join — which also requires O(n) space for the sort buffers, but distributes that cost differently. The tradeoff between join strategies is partly a conversation about which O(n) space bill you're willing to pay.
 
 ---
 
@@ -480,4 +495,4 @@ Part 5 covers O(n log n): why comparison-based sorting cannot do better than n l
 
 ---
 
-*The Complexity Series is a 10-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*
+*The Complexity Series is a 9-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*

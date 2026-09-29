@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. **Why Your Code Slows Down** _(you are here)_
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 Your data pipeline processes 1,000 customer records in development. It finishes in two seconds. Unit tests pass, pull request merges, the team ships it.
@@ -24,7 +39,7 @@ Time and space complexity is the tool that lets you predict that difference befo
 
 That is what this series is about. Not algorithms for their own sake. Not academic notation exercises. The specific, practical intuition a data engineer needs to look at a function, understand how it will behave at scale, and make better architecture decisions because of it.
 
-This first post covers the foundation everything else builds on. We will get into individual complexity classes in Part 2. Before that, you need the core mechanics solid: what complexity actually measures, how Big O notation works, and what the notation is actually telling you when you read or write it.
+This first post covers the foundation everything else builds on. We will get into individual complexity classes in Part 2. Before that, you need the core mechanics solid: what complexity actually measures, how [Big O notation](https://en.wikipedia.org/wiki/Big_O_notation) works, and what the notation is actually telling you when you read or write it.
 
 ---
 

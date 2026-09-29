@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. **O(n²) and the Nested Loop Trap** _(you are here)_
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 ## The Thing That Looks Harmless
@@ -120,7 +135,7 @@ This is the exact scenario that triggers O(n²) in production. Data engineers al
 
 These are exactly the inputs that trigger the worst case on naive quicksort.
 
-![Quicksort partition tree showing naive pivot degenerating to a linear chain on sorted data, versus balanced splits on random data](assets/quicksort-partition-patterns.svg)
+![Quicksort partition tree showing naive pivot degenerating to a linear chain on sorted data, versus balanced splits on random data](assets/quicksort-partition-patterns.jpg)
 
 ## The Production Catastrophe
 
@@ -224,17 +239,15 @@ The same adversarial input causes both symptoms simultaneously. Sorted data prod
 
 This is why Python sets `sys.setrecursionlimit`. If quicksort recurses n frames deep on large sorted data, it hits Python's default recursion limit of 1000 and crashes with a `RecursionError`.
 
-![Stack frames accumulating during degenerate quicksort recursion on sorted data, showing how O(n) stack space emerges from the call stack](assets/quicksort-recursion-stack.svg)
+![Stack frames accumulating during degenerate quicksort recursion on sorted data, showing how O(n) stack space emerges from the call stack](assets/quicksort-recursion-stack.jpg)
 
 ## When O(n²) Is Genuinely Unavoidable
 
 Before the production guidance, it's worth knowing when you can't avoid O(n²) no matter what you do.
 
-**The output itself is O(n²).** If the answer requires producing every pair, you can't beat it. Finding all pairs of transactions from the same customer inherently produces n² results in the worst case. No algorithm writes faster than the size of what it's writing.
-
-**Edit distance and fuzzy matching.** Classic dynamic programming fills an n×m grid where every cell depends on its neighbors. Entity resolution (matching "John Smith" vs "Jon Smith" across two databases) uses this. You can't avoid per-pair comparison. The trick is reducing pairs through blocking (only compare rows with matching postcodes), but the per-pair cost stays O(n²) in string length.
-
-**Small n where O(n²) is deliberately acceptable.** Joining a 100M row transactions table against a 5-row config table is technically O(n×m), but with m=5 it's effectively O(n). Quadratic technically, but practically O(1) per transaction because one dimension is bounded.
+- **Output-bound problems.** If the answer requires producing every pair, you can't beat it. Finding all pairs of transactions from the same customer inherently produces n² results in the worst case. No algorithm writes faster than the size of what it's writing.
+- **Edit distance and fuzzy matching.** Classic dynamic programming fills an n×m grid where every cell depends on its neighbors. Entity resolution (matching "John Smith" vs "Jon Smith" across two databases) uses this. You can't avoid per-pair comparison. The trick is reducing pairs through blocking (only compare rows with matching postcodes), but the per-pair cost stays O(n²) in string length.
+- **Small, deliberately bounded n.** Joining a 100M row transactions table against a 5-row config table is technically O(n×m), but with m=5 it's effectively O(n). Quadratic technically, but practically O(1) per transaction because one dimension is bounded.
 
 > **Does this mean I should never use quicksort in production?**
 > 
@@ -244,23 +257,21 @@ Before the production guidance, it's worth knowing when you can't avoid O(n²) n
 
 If you're building a pipeline that sorts data:
 
-**For large scale (millions of rows):** Use your data warehouse's `ORDER BY` or Spark's `SortMergeJoin`. Don't touch sorting algorithms directly. The tool handles it.
+- **Large scale (millions of rows):** Use your data warehouse's `ORDER BY` or [Spark](https://spark.apache.org/)'s `SortMergeJoin`. Don't touch sorting algorithms directly. The tool handles it.
+- **Small lookup tables (hundreds to thousands of rows):** Python's built-in `sorted()` uses [Timsort](https://en.wikipedia.org/wiki/Timsort), which is a merge sort hybrid that exploits already-sorted runs. Stable, guaranteed O(n log n), designed for real-world data. Use this.
+- **Micro-batches:** Same as above. Timsort exploits if your data arrives nearly in order (like [Kafka](https://kafka.apache.org/) messages often do).
 
-**For small lookup tables (hundreds to thousands of rows):** Python's built-in `sorted()` uses Timsort, which is a merge sort hybrid that exploits already-sorted runs. Stable, guaranteed O(n log n), designed for real-world data. Use this.
-
-**For micro-batches:** Same as above. Timsort exploits if your data arrives nearly in order (like Kafka messages often do).
-
-**Never use naive quicksort explicitly** in a data pipeline processing timestamp-ordered data. Choose between:
+Never use naive quicksort explicitly in a data pipeline processing timestamp-ordered data. Choose between:
 - Merge sort (guaranteed O(n log n), stable, slightly more memory)
 - Timsort (best of both, the default in Python)
 - Let your warehouse or Spark engine decide (they do it right)
 
 If a colleague says "I'm using randomized quicksort, so average case is the same complexity as merge sort," nod and then point out that your data is almost always sorted by timestamp or ID. Quicksort's average case is irrelevant when your input matches its worst case signature perfectly. You want stability and guarantees, not average-case speed.
 
-![Decision tree showing when to use merge sort vs quicksort vs data warehouse sorting, with inputs of data size, data order, and stability requirements](assets/sort-choice-decision-tree.svg)
+![Decision tree showing when to use merge sort vs quicksort vs data warehouse sorting, with inputs of data size, data order, and stability requirements](assets/sort-choice-decision-tree.jpg)
 
 But what happens when the complexity problem is so severe that no amount of algorithmic optimization saves you? That's when you leave the polynomial world behind and enter exponential territory, where O(n²) looks like a luxury. That's Part 7.
 
 ## Rule of Thumb
 
-> **When your input data is naturally ordered (timestamps, IDs, exports from another system), naive quicksort becomes your worst-case catastrophe. One doubling of data triggers a 4x slowdown, not a 2.3x slowdown. Always measure on production-shaped data, not random test data. If your sort doesn't guarantee O(n log n) regardless of input shape, you've built a latency bomb that waits for the right dataset to detonate.**
+> **When your input data is naturally ordered** (timestamps, IDs, exports from another system), naive quicksort becomes your worst-case catastrophe. One doubling of data triggers a 4x slowdown, not a 2.3x slowdown. Always measure on production-shaped data, not random test data. If your sort doesn't guarantee O(n log n) regardless of input shape, you've built a latency bomb that waits for the right dataset to detonate.

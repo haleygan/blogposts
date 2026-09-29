@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. **O(n log n) and Why Sorting Costs More Than You Think** _(you are here)_
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 ## The surprise hidden in sorted data
@@ -62,7 +77,7 @@ At n = 1,000, sorting at O(n log n) costs 9,900 operations. A quadratic algorith
 
 This shape—growing faster than n, but slower than n squared—is the defining fingerprint of O(n log n).
 
-![Complexity growth comparison](assets/complexity-curves.svg)
+![Complexity growth comparison](assets/complexity-curves.jpg)
 
 ## Why O(n) sorting is mathematically impossible
 
@@ -76,7 +91,7 @@ Start with n elements. There are n! (n factorial) possible orderings. A sorting 
 
 For a binary tree to have n! leaves, it must have a depth of at least log2(n!).
 
-Using Stirling's approximation, log2(n!) is approximately n × log2(n).
+Using [Stirling's approximation](https://en.wikipedia.org/wiki/Stirling%27s_approximation), log2(n!) is approximately n × log2(n).
 
 Therefore, you need at least n × log2(n) comparisons to guarantee you can sort any input of size n.
 
@@ -93,7 +108,7 @@ The message is simple: in the worst case, any comparison-based sorting algorithm
 
 This is not a limitation of current algorithms. This is a proof that faster algorithms do not exist.
 
-![Decision tree for sorting](assets/decision-tree.svg)
+![Decision tree for sorting](assets/decision-tree.jpg)
 
 ## Merge sort: the canonical O(n log n) algorithm
 
@@ -154,7 +169,7 @@ Here is what that looks like empirically (n = 8):
 
 **Total:** 3 levels × 8 comparisons per level = 24 ops. Since log₂(8) = 3, n log n = 8 × 3 = 24.
 
-![Merge sort recursion tree](assets/merge-sort-tree.svg)
+![Merge sort recursion tree](assets/merge-sort-tree.jpg)
 
 This recursion tree structure is the skeleton of every O(n log n) algorithm. A logarithmic number of passes, each touching all n elements once.
 
@@ -189,7 +204,7 @@ That worst case is coming in Part 6. For now, know this: Quicksort's average cas
 
 ## Python's Timsort: practical meets mathematical
 
-Python does not use pure merge sort or pure quicksort. It uses Timsort, a hybrid algorithm designed by Tim Peters for real data.
+Python does not use pure merge sort or pure quicksort. It uses [Timsort](https://en.wikipedia.org/wiki/Timsort), a hybrid algorithm designed by Tim Peters for real data.
 
 Timsort starts by identifying runs (already-sorted subsequences) in the input. If the data is already partially sorted (which real data often is), Timsort finds those runs and extends them. Then it merges the runs together.
 
@@ -231,7 +246,7 @@ This is why Timsort is the default sort in CPython, Java, and Android. It is a r
 
 Sorting is not just a teaching example. It is baked into real data pipelines.
 
-Consider a Spark sort-merge join:
+Consider a [Spark](https://spark.apache.org/) sort-merge join:
 
 ```python
 # PySpark pseudocode
@@ -253,7 +268,7 @@ If the input is 100 GB:
 
 On a modern cluster, that sort can take 10s of seconds to minutes for a 100 GB table. Shave the constant factor by 2, and you save 5-10 seconds. This is why database query optimizers obsess over sort order.
 
-Another example: database indexes. When you create an index on a column, the database sorts the data into a B-tree structure. A table with 10 million rows gets sorted once during index creation. That is O(10 million × log 10 million) = roughly 230 million comparisons. On a modern CPU doing ~1 billion comparisons per second, that is a quarter of a second. Quick, but not free.
+Another example: database indexes. When you create an index on a column, the database sorts the data into a [B-tree](https://en.wikipedia.org/wiki/B-tree) structure. A table with 10 million rows gets sorted once during index creation. That is O(10 million × log 10 million) = roughly 230 million comparisons. On a modern CPU doing ~1 billion comparisons per second, that is a quarter of a second. Quick, but not free.
 
 If you create 10 indexes on the same table, that is 10 sorts. Still fast per sort, but the time adds up.
 
@@ -263,7 +278,7 @@ The lesson: sorting is expensive relative to scanning. Avoid it when you can. Wh
 
 Here is the productive way to think about O(n log n):
 
-**Sorting is the algorithmic speed limit for any comparison-based operation that requires global knowledge.**
+> Sorting is the algorithmic speed limit for any comparison-based operation that requires global knowledge.
 
 If you need to know the order of all n elements without additional structure (like hash distribution or numeric range), you have to do at least O(n log n) work. You cannot do it in O(n).
 

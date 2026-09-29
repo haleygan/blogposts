@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. [O(log n) and the Magic of Halving](#/post/the-complexity-series-part-3-olog-n-magic-of-halving)
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. **O(2ⁿ) and O(n!) When Compute Stops Being the Answer** _(you are here)_
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 You've made it to the complexity classes that change the conversation entirely.
@@ -62,19 +77,9 @@ def fib(n):
     return fib(n - 1) + fib(n - 2)
 ```
 
-This reads almost exactly like the mathematical definition. A junior engineer would call it elegant. But trace through what actually happens when you call `fib(5)`:
+This reads almost exactly like the mathematical definition. A junior engineer would call it elegant. But trace through what actually happens when you call `fib(5)`: the same sub-problem gets requested from multiple branches of the recursion, and each request recomputes it from scratch.
 
-```
-                    fib(5)
-                   /      \
-              fib(4)        fib(3)
-             /      \       /    \
-         fib(3)   fib(2) fib(2) fib(1)
-         /    \    /   \   /   \
-      fib(2) fib(1) fib(1) fib(0) fib(1) fib(0)
-      /    \
-  fib(1)  fib(0)
-```
+![Naive recursive call tree for fib(5), showing the same subproblems requested from multiple branches](assets/naive-fibonacci-call-tree.jpg)
 
 Count the function calls. `fib(3)` appears twice. `fib(2)` appears three times. `fib(1)` appears five times.
 
@@ -130,6 +135,8 @@ def fib_memo(n, cache={}):
 
 The only change is checking the cache before computing. When you hit a cached result, you return it in O(1) time. You solve each unique sub-problem exactly once, then look it up every time after.
 
+![Memoized fib(5) as a DAG: each value is a single node computed once, referenced by every branch that needs it](assets/fibonacci-memoized-dag.jpg)
+
 The impact is stunning: fib(50) naive takes 40 billion calls; memoized, it takes 50.
 
 The time complexity collapses from O(2ⁿ) to O(n). But you paid a price: the cache stores n entries, so space becomes O(n) instead of just the recursion stack.
@@ -182,7 +189,7 @@ When you write a multi-table join, the planner must decide the order to join tab
 
 The number of possible table subsets for n tables is exactly 2ⁿ. Every subset appears in the planner's DP table. For 4 tables that's 16 subsets. For 8 tables, 256. For 12 tables, 4,096.
 
-This is why Postgres has hard limits:
+This is why [Postgres](https://www.postgresql.org/) has hard limits:
 
 ```sql
 SHOW join_collapse_limit;     -- default: 8
@@ -225,9 +232,11 @@ Compare the two growth curves:
 
 At n=20, exponential has reached about a million. Factorial has reached 2.4 quintillion.
 
+![Quadratic, exponential, and factorial growth plotted on a log scale, showing how far factorial pulls away from the other two](assets/exponential-factorial-growth-curves.jpg)
+
 ## The Traveling Salesman Problem
 
-O(n!) comes from permutations. The canonical example is the Traveling Salesman Problem: given n cities and distances between them, find the shortest route visiting all of them.
+O(n!) comes from permutations. The canonical example is the [Traveling Salesman Problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem): given n cities and distances between them, find the shortest route visiting all of them.
 
 The brute force approach is straightforward: try every possible ordering, measure each route's distance, keep the shortest.
 
@@ -320,7 +329,7 @@ Nearest neighbor is 387 million times faster. But it's greedy. It always picks t
 
 Real benchmark data shows nearest neighbor solutions are typically 5-15% longer than optimal. For a delivery business, would you accept a route that's 8% longer if it means your morning job finishes in milliseconds instead of hours?
 
-The real logistics companies don't use brute force. UPS ORION evaluates 200,000 route alternatives for a single driver using constraint-based search that prunes bad routes early. Amazon CONDOR uses a 5-6 hour precomputation window before orders leave the fulfillment center. FedEx DRO adjusts routes dynamically as conditions change.
+The real logistics companies don't use brute force. [UPS ORION](https://www.informs.org/Impact/O.R.-Analytics-Success-Stories/UPS) evaluates 200,000 route alternatives for a single driver using constraint-based search that prunes bad routes early. [Amazon CONDOR](https://www.amazon.science/blog/maximizing-the-efficiency-of-amazons-own-delivery-networks) uses a 5-6 hour precomputation window before orders leave the fulfillment center. FedEx DRO adjusts routes dynamically as conditions change.
 
 None of them brute force every permutation. The real skill is knowing when to approximate and how much accuracy to trade for speed.
 

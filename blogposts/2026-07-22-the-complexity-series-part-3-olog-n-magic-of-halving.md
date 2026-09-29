@@ -10,6 +10,21 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
+coverImage: assets/big-o-series-cover.png
+---
+
+**The Complexity Series**
+
+1. [Why Your Code Slows Down](#/post/the-complexity-series-part-1-why-your-code-slows-down)
+2. [O(1) and the Free Lunch](#/post/the-complexity-series-part-2-o1-and-the-free-lunch)
+3. **O(log n) and the Magic of Halving** _(you are here)_
+4. [O(n) and Touching Everything Once](#/post/the-complexity-series-part-4-on-touching-everything-once)
+5. [O(n log n) and Why Sorting Costs More Than You Think](#/post/the-complexity-series-part-5-onlogn-sorting-costs)
+6. [O(n²) and the Nested Loop Trap](#/post/the-complexity-series-part-6-on2-nested-loop-trap)
+7. [O(2ⁿ) and O(n!) When Compute Stops Being the Answer](#/post/the-complexity-series-part-7-o2n-when-compute-dies)
+8. [Your Code Is Slow. Now What? Time Profiling](#/post/the-complexity-series-part-8-time-profiling)
+9. [Your Job Got OOM-Killed. Now What? Memory Profiling](#/post/the-complexity-series-part-9-memory-profiling)
+
 ---
 
 Part 2 showed that O(1) is constant time: hash tables give you a direct jump to any value regardless of data size. O(log n) is the next best thing, and it powers a different class of problem: searching sorted data.
@@ -107,7 +122,7 @@ log₂(1,000,000,000) ≈ 30 steps
 
 ## Why the base doesn't matter for Big O (but does for counting)
 
-Binary search has a branching factor of 2: every step eliminates exactly half the remaining data. But not all O(log n) algorithms halve the data. A database B-tree index has a branching factor of 100 to 400: every level eliminates all but 1/300th of the remaining candidates.
+Binary search has a branching factor of 2: every step eliminates exactly half the remaining data. But not all O(log n) algorithms halve the data. A database [B-tree](https://en.wikipedia.org/wiki/B-tree) index has a branching factor of 100 to 400: every level eliminates all but 1/300th of the remaining candidates.
 
 The first thing to note: for Big O notation, the base doesn't matter. All logarithms differ by a constant factor:
 
@@ -125,7 +140,7 @@ But when you're counting actual operations for capacity planning, the base matte
 | Big O classification | Any base, write O(log n) | Base is a constant, drops out |
 | Actual operation count | Match base to branching factor | You need the real step count |
 
-For a Postgres B-tree with branching factor 300, looking up one row in a 200 million row table:
+For a [Postgres](https://www.postgresql.org/) B-tree with branching factor 300, looking up one row in a 200 million row table:
 
 ```text
 log₃₀₀(200,000,000) = log(200,000,000) / log(300)
@@ -165,7 +180,7 @@ Rule of thumb table:
 |---|---|---|
 | `(low + high) // 2` in code | Binary split | 2 |
 | Database index lookup | B-tree traversal | 100–400 |
-| Python `bisect` module | Binary search internally | 2 |
+| Python [`bisect`](https://docs.python.org/3/library/bisect.html) module | Binary search internally | 2 |
 | Skip list | Probabilistic levels | ~2 on average |
 | Trie lookup | Character-by-character descent | Alphabet size |
 
@@ -265,7 +280,7 @@ The rule: never assume your index is being used. Always verify with EXPLAIN.
 
 The halving pattern shows up anywhere data needs to be searched or structured for efficient retrieval.
 
-**Partition pruning in Spark** — O(log n) file elimination:
+**Partition pruning in [Spark](https://spark.apache.org/)** — O(log n) file elimination:
 
 ```python
 # Without partitioning: scans all 500 Parquet files
@@ -549,4 +564,4 @@ Part 4 covers O(n): why some problems unavoidably require touching every record,
 
 ---
 
-*The Complexity Series is a 10-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*
+*The Complexity Series is a 9-part walkthrough of algorithmic complexity for practising data engineers, derived from real learning sessions.*
