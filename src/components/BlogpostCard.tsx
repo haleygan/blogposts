@@ -81,7 +81,7 @@ export const BlogpostCard = React.memo(function BlogpostCard({ post, onSelect, o
       className="group flex flex-col md:flex-row gap-6 p-6 md:p-8 bg-white hover:bg-stone-50 border border-stone-100 hover:border-stone-300 rounded-2xl cursor-pointer hover:shadow-xl hover:shadow-stone-200/40 hover:scale-[1.008] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
     >
       {post.coverImage ? (
-        <div className="w-full md:w-48 lg:w-60 h-44 md:h-auto rounded-xl overflow-hidden shrink-0 relative bg-stone-100">
+        <div className="w-full md:w-48 lg:w-60 h-44 md:h-auto md:aspect-video md:self-start rounded-xl overflow-hidden shrink-0 relative bg-stone-100">
           <img
             src={post.coverImage}
             alt={post.title}
