@@ -10,7 +10,6 @@ tags:
   - Data Engineering
   - Big O
 category: Data Engineering
-coverImage: assets/big-o-series-cover.png
 ---
 
 **The Complexity Series**
